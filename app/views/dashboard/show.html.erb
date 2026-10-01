@@ -1,0 +1,85 @@
+<% content_for :title, "Dashboard" %>
+
+<%= render "shared/page_header", pretitle: "Overview", title: "Dashboard" do %>
+  <%= link_to conversations_path(status: "human_active"), class: "btn" do %>Needs attention<% end %>
+  <%= link_to new_ticket_path, class: "btn btn-primary" do %><%= icon :plus, size: 16 %> New ticket<% end %>
+<% end %>
+
+<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+  <%= render "stat", label: "Open conversations", value: @open_conversations, note: "#{@ai_conversations} handled by AI" %>
+  <%= render "stat", label: "Needs a human", value: @needs_human, note: "Taken over by the team" %>
+  <%= render "stat", label: "Active tickets", value: @active_tickets, note: "#{@hot_tickets} high or urgent" %>
+  <%= render "stat", label: "Won this month", value: @won_this_month, note: "#{@lost_this_month} lost" %>
+</div>
+
+<div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+  <%= render "icon_stat", icon_name: :message_in, title: pluralize(@messages_today, "message"), note: "received today" %>
+  <%= render "icon_stat", icon_name: :robot, title: pluralize(@ai_replies_today, "AI reply", plural: "AI replies"), note: "sent today" %>
+  <%= render "icon_stat", icon_name: :user_plus, title: pluralize(@new_contacts_this_week, "new contact"), note: "this week" %>
+  <%= render "icon_stat", icon_name: :ticket, title: pluralize(@tickets_this_week, "ticket"), note: "#{@ai_tickets_this_week} created by AI this week" %>
+</div>
+
+<div class="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3">
+  <section class="card lg:col-span-2">
+    <div class="card-header">
+      <h2 class="card-title">Messages received</h2>
+      <span class="text-xs text-gray-500">Last <%= DashboardController::CHART_DAYS %> days</span>
+    </div>
+    <div class="card-body">
+      <%= render "messages_chart", days: @daily_messages %>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="card-header">
+      <h2 class="card-title">Latest conversations</h2>
+      <%= link_to "View all", conversations_path, class: "link text-sm" %>
+    </div>
+    <ul class="divide-y divide-gray-100">
+      <% @recent_conversations.each do |conversation| %>
+        <li>
+          <%= link_to conversation, class: "flex items-center gap-3 px-5 py-3 hover:bg-gray-50" do %>
+            <span class="avatar h-8 w-8 text-xs"><%= conversation.contact.display_name.first.upcase %></span>
+            <span class="min-w-0 flex-1">
+              <span class="block truncate text-sm font-medium"><%= conversation.contact.display_name %></span>
+              <span class="block text-xs text-gray-500"><%= conversation.last_message_at ? "#{time_ago_in_words(conversation.last_message_at)} ago" : "No messages" %></span>
+            </span>
+            <%= badge conversation.status %>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+    <% if @recent_conversations.empty? %>
+      <p class="px-5 py-8 text-center text-sm text-gray-500">No open conversations.</p>
+    <% end %>
+  </section>
+</div>
+
+<section class="card mt-4">
+  <div class="card-header">
+    <h2 class="card-title">Active tickets</h2>
+    <%= link_to "Open board", tickets_path, class: "link text-sm" %>
+  </div>
+  <div class="overflow-x-auto">
+    <table class="table">
+      <thead>
+        <tr><th>Ticket</th><th>Customer</th><th>Status</th><th>Priority</th><th>Assignee</th><th>Created</th></tr>
+      </thead>
+      <tbody>
+        <% @recent_tickets.each do |ticket| %>
+          <tr>
+            <td><%= link_to ticket.title, ticket, class: "font-medium hover:underline" %></td>
+            <td class="text-gray-600"><%= ticket.contact.display_name %></td>
+            <td><%= badge ticket.status %></td>
+            <td><%= badge ticket.priority %></td>
+            <td class="text-gray-600"><%= ticket.assignee&.name || "Unassigned" %></td>
+            <td class="text-gray-500"><%= time_ago_in_words(ticket.created_at) %> ago</td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+    <% if @recent_tickets.empty? %>
+      <p class="px-5 py-8 text-center text-sm text-gray-500">No active tickets.</p>
+    <% end %>
+  </div>
+</section>

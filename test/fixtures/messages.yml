@@ -1,0 +1,5 @@
+ali_hello:
+  conversation: ali_open
+  direction: inbound
+  sender_type: customer
+  body: Hi, do you have the 5kW inverter?

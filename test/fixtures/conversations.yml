@@ -1,0 +1,5 @@
+ali_open:
+  contact: ali
+  status: ai_active
+  last_inbound_at: <%= 1.hour.ago.to_fs(:db) %>
+  last_message_at: <%= 1.hour.ago.to_fs(:db) %>

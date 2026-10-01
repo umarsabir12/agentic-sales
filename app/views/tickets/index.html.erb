@@ -1,0 +1,39 @@
+<% content_for :title, "Tickets" %>
+
+<%= render "shared/page_header", pretitle: "Sales", title: "Tickets" do %>
+  <div class="flex rounded-md border border-gray-300 bg-white p-0.5 text-sm">
+    <%= link_to "All", tickets_path, class: [ "rounded px-3 py-1.5", params[:mine].blank? ? "bg-brand-50 font-medium text-brand-700" : "text-gray-600 hover:text-ink" ] %>
+    <%= link_to "Mine", tickets_path(mine: 1), class: [ "rounded px-3 py-1.5", params[:mine].present? ? "bg-brand-50 font-medium text-brand-700" : "text-gray-600 hover:text-ink" ] %>
+  </div>
+  <%= link_to new_ticket_path, class: "btn btn-primary" do %><%= icon :plus, size: 16 %> New ticket<% end %>
+<% end %>
+
+<div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+  <% Ticket.statuses.each_key do |status| %>
+    <section class="card flex flex-col bg-gray-50/70">
+      <div class="card-header bg-white">
+        <h2 class="card-title"><%= status.humanize %></h2>
+        <span class="rounded-full bg-gray-100 px-2 text-xs font-medium text-gray-600"><%= @tickets_by_status.fetch(status, []).size %></span>
+      </div>
+      <div class="space-y-2 p-3">
+        <% @tickets_by_status.fetch(status, []).each do |ticket| %>
+          <%= link_to ticket, class: "block rounded-md border border-gray-200 bg-white p-3 text-sm hover:border-brand-200 hover:shadow-sm" do %>
+            <div class="font-medium"><%= ticket.title %></div>
+            <div class="mt-0.5 text-gray-500"><%= ticket.contact.display_name %></div>
+            <div class="mt-3 flex items-center justify-between">
+              <%= badge ticket.priority %>
+              <% if ticket.assignee %>
+                <span class="avatar h-6 w-6 text-[10px]" title="<%= ticket.assignee.name %>"><%= ticket.assignee.initials %></span>
+              <% else %>
+                <span class="text-xs text-gray-400">Unassigned</span>
+              <% end %>
+            </div>
+          <% end %>
+        <% end %>
+        <% if @tickets_by_status.fetch(status, []).empty? %>
+          <p class="py-6 text-center text-xs text-gray-400">No tickets</p>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+</div>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html class="h-full">
+  <head>
+    <title><%= content_for(:title) || "WhatsApp Agent" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= yield :head %>
+
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="min-h-full">
+    <% if user_signed_in? %>
+      <header class="border-b border-gray-200 bg-white">
+        <div class="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
+          <%= link_to root_path, class: "flex items-center gap-2.5" do %>
+            <span class="flex h-8 w-8 items-center justify-center rounded-md bg-brand-600 text-white"><%= icon :inbox, size: 18 %></span>
+            <span class="text-lg font-semibold tracking-tight">WhatsApp Agent</span>
+          <% end %>
+
+          <details class="relative">
+            <summary class="flex cursor-pointer list-none items-center gap-3 rounded-md px-2 py-1 hover:bg-gray-50">
+              <span class="avatar h-9 w-9 text-sm"><%= current_user.initials %></span>
+              <span class="hidden text-left leading-tight sm:block">
+                <span class="block text-sm font-medium"><%= current_user.name %></span>
+                <span class="block text-xs text-gray-500"><%= current_user.role.humanize %></span>
+              </span>
+              <%= icon :chevron_down, size: 16, css: "text-gray-400" %>
+            </summary>
+            <div class="card absolute right-0 z-20 mt-2 w-52 py-1 text-sm shadow-lg">
+              <div class="border-b border-gray-100 px-4 py-2 text-xs text-gray-500"><%= current_user.email %></div>
+              <%= button_to destroy_user_session_path, method: :delete, class: "flex w-full items-center gap-2 px-4 py-2 text-left hover:bg-gray-50" do %>
+                <%= icon :logout, size: 16 %> Sign out
+              <% end %>
+            </div>
+          </details>
+        </div>
+      </header>
+
+      <nav class="border-b border-gray-200 bg-white">
+        <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
+          <div class="flex gap-6 overflow-x-auto">
+            <%= nav_link "Dashboard", root_path, icon_name: :dashboard, active: controller_name == "dashboard" %>
+            <%= nav_link "Inbox", conversations_path, icon_name: :inbox, active: controller_name.in?(%w[conversations messages]), count: Conversation.human_active.count %>
+            <%= nav_link "Tickets", tickets_path, icon_name: :ticket, active: controller_name == "tickets" %>
+            <%= nav_link "Contacts", contacts_path, icon_name: :contacts, active: controller_name == "contacts" %>
+            <% if current_user.admin? %>
+              <%= nav_link "Team", admin_users_path, icon_name: :team, active: controller_path == "admin/users" %>
+            <% end %>
+          </div>
+          <%= form_with url: contacts_path, method: :get, class: "relative hidden md:block" do |f| %>
+            <span class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-gray-400"><%= icon :search, size: 16 %></span>
+            <%= f.search_field :q, value: (params[:q] if controller_name == "contacts"), placeholder: "Search contacts…", class: "form-control w-64 py-1.5 pl-9" %>
+          <% end %>
+        </div>
+      </nav>
+
+      <main class="mx-auto max-w-7xl px-4 py-6 sm:px-6">
+        <%= render "shared/flash" %>
+        <%= yield %>
+      </main>
+    <% else %>
+      <main class="mx-auto max-w-sm px-4 py-16">
+        <div class="mb-8 flex items-center justify-center gap-2.5">
+          <span class="flex h-9 w-9 items-center justify-center rounded-md bg-brand-600 text-white"><%= icon :inbox, size: 20 %></span>
+          <span class="text-xl font-semibold tracking-tight">WhatsApp Agent</span>
+        </div>
+        <%= render "shared/flash" %>
+        <%= yield %>
+      </main>
+    <% end %>
+  </body>
+</html>

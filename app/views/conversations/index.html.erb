@@ -1,0 +1,22 @@
+<% content_for :title, "Inbox" %>
+<%= turbo_stream_from :conversations %>
+
+<%= render "shared/page_header", pretitle: "WhatsApp", title: "Inbox" %>
+
+<section class="card">
+  <div class="card-header">
+    <nav class="flex gap-1 text-sm">
+      <% [ [ "Open", nil ], [ "AI", "ai_active" ], [ "Human", "human_active" ], [ "Closed", "closed" ] ].each do |label, status| %>
+        <%= link_to label, conversations_path(status: status),
+              class: [ "rounded-md px-3 py-1.5", @status == status ? "bg-brand-50 font-medium text-brand-700" : "text-gray-600 hover:bg-gray-50" ] %>
+      <% end %>
+    </nav>
+    <span class="text-xs text-gray-500"><%= pluralize(@conversations.size, "conversation") %></span>
+  </div>
+  <div class="divide-y divide-gray-100" id="conversations">
+    <%= render @conversations %>
+  </div>
+  <% if @conversations.empty? %>
+    <p class="px-5 py-10 text-center text-sm text-gray-500">No conversations here.</p>
+  <% end %>
+</section>

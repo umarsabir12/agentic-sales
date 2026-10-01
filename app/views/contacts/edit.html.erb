@@ -1,0 +1,23 @@
+<% content_for :title, "Edit contact" %>
+
+<div class="max-w-2xl">
+  <%= render "shared/page_header", pretitle: "Contact", title: "Edit #{@contact.display_name}" %>
+
+  <%= form_with model: @contact, class: "card" do |f| %>
+    <div class="card-body space-y-4">
+      <%= render "shared/errors", record: @contact %>
+      <div>
+        <%= f.label :name, class: "form-label" %>
+        <%= f.text_field :name, class: "form-control" %>
+      </div>
+      <div>
+        <%= f.label :notes, class: "form-label" %>
+        <%= f.text_area :notes, rows: 5, class: "form-control" %>
+      </div>
+    </div>
+    <div class="flex justify-end gap-2 border-t border-gray-200 px-5 py-3.5">
+      <%= link_to "Cancel", @contact, class: "btn" %>
+      <%= f.submit "Save", class: "btn btn-primary" %>
+    </div>
+  <% end %>
+</div>

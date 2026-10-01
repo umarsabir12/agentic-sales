@@ -1,0 +1,5 @@
+<% content_for :title, "Edit team member" %>
+<div class="max-w-2xl">
+  <%= render "shared/page_header", pretitle: "Team", title: "Edit #{@user.name}" %>
+  <%= render "form", user: @user %>
+</div>

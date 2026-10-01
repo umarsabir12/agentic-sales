@@ -1,0 +1,18 @@
+<%= link_to conversation_path(conversation), id: dom_id(conversation), class: "flex items-center gap-4 px-5 py-3.5 hover:bg-gray-50" do %>
+  <span class="avatar h-10 w-10 text-sm"><%= conversation.contact.display_name.first.upcase %></span>
+  <div class="min-w-0 flex-1">
+    <div class="flex items-center gap-2">
+      <span class="truncate font-medium"><%= conversation.contact.display_name %></span>
+      <%= badge conversation.status %>
+    </div>
+    <p class="truncate text-sm text-gray-500"><%= conversation.last_message&.body %></p>
+  </div>
+  <div class="shrink-0 text-right text-xs text-gray-500">
+    <% if conversation.last_message_at %>
+      <div><%= time_ago_in_words(conversation.last_message_at) %> ago</div>
+    <% end %>
+    <% if conversation.assigned_user %>
+      <div class="mt-0.5"><%= conversation.assigned_user.name %></div>
+    <% end %>
+  </div>
+<% end %>

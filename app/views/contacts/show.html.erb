@@ -1,0 +1,47 @@
+<% content_for :title, @contact.display_name %>
+
+<%= render "shared/page_header", pretitle: "Contact", title: @contact.display_name do %>
+  <%= link_to edit_contact_path(@contact), class: "btn" do %><%= icon :pencil, size: 16 %> Edit<% end %>
+<% end %>
+
+<div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
+  <section class="card">
+    <div class="card-header"><h2 class="card-title">Details</h2></div>
+    <dl class="card-body space-y-3 text-sm">
+      <div><dt class="text-gray-500">Phone</dt><dd class="tabular-nums">+<%= @contact.phone %></dd></div>
+      <div><dt class="text-gray-500">WhatsApp name</dt><dd><%= @contact.profile_name.presence || "—" %></dd></div>
+      <div><dt class="text-gray-500">Customer since</dt><dd><%= l @contact.created_at.to_date, format: :long %></dd></div>
+      <div><dt class="text-gray-500">Notes</dt><dd class="whitespace-pre-wrap"><%= @contact.notes.presence || "—" %></dd></div>
+    </dl>
+  </section>
+
+  <section class="card">
+    <div class="card-header"><h2 class="card-title">Conversations</h2></div>
+    <ul class="divide-y divide-gray-100 text-sm">
+      <% @conversations.each do |conversation| %>
+        <li>
+          <%= link_to conversation, class: "flex items-center justify-between px-5 py-3 hover:bg-gray-50" do %>
+            <span>Started <%= l conversation.created_at.to_date, format: :long %></span>
+            <%= badge conversation.status %>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+    <% if @conversations.empty? %><p class="card-body text-sm text-gray-500">No conversations yet.</p><% end %>
+  </section>
+
+  <section class="card">
+    <div class="card-header"><h2 class="card-title">Tickets</h2></div>
+    <ul class="divide-y divide-gray-100 text-sm">
+      <% @tickets.each do |ticket| %>
+        <li>
+          <%= link_to ticket, class: "flex items-center justify-between gap-2 px-5 py-3 hover:bg-gray-50" do %>
+            <span class="truncate font-medium"><%= ticket.title %></span>
+            <%= badge ticket.status %>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+    <% if @tickets.empty? %><p class="card-body text-sm text-gray-500">No tickets yet.</p><% end %>
+  </section>
+</div>

@@ -1,0 +1,24 @@
+<% content_for :title, "Sign in" %>
+
+<div class="card">
+  <div class="card-body p-7">
+    <h1 class="mb-6 text-center text-lg font-semibold">Sign in to your account</h1>
+    <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: "space-y-4" }) do |f| %>
+      <div>
+        <%= f.label :email, "Email address", class: "form-label" %>
+        <%= f.email_field :email, autofocus: true, autocomplete: "email", required: true, placeholder: "you@company.com", class: "form-control" %>
+      </div>
+      <div>
+        <div class="flex items-center justify-between">
+          <%= f.label :password, class: "form-label" %>
+          <%= link_to "Forgot password?", new_password_path(resource_name), class: "link mb-1.5 text-xs" %>
+        </div>
+        <%= f.password_field :password, autocomplete: "current-password", required: true, placeholder: "Your password", class: "form-control" %>
+      </div>
+      <label class="flex items-center gap-2 text-sm">
+        <%= f.check_box :remember_me, class: "rounded border-gray-300" %> Remember me on this device
+      </label>
+      <%= f.submit "Sign in", class: "btn btn-primary w-full" %>
+    <% end %>
+  </div>
+</div>

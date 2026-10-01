@@ -1,0 +1,33 @@
+<%# Single-series bar chart: inbound messages per day. The card title names the series, so no legend. %>
+<% max = days.map(&:last).max.to_i %>
+<% scale_max = max.zero? ? 4 : (max / 4.0).ceil * 4 %>
+
+<figure aria-label="Messages received per day" class="pl-8">
+  <div class="relative h-56">
+    <% 0.upto(4) do |i| %>
+      <div class="pointer-events-none absolute inset-x-0 border-t <%= i.zero? ? "border-gray-300" : "border-dashed border-gray-200" %>" style="bottom: <%= i * 25 %>%">
+        <span class="absolute right-full mr-2 -translate-y-1/2 text-[11px] tabular-nums text-gray-400"><%= scale_max * i / 4 %></span>
+      </div>
+    <% end %>
+    <div class="absolute inset-0 flex items-end gap-0.5">
+      <% days.each do |day, count| %>
+        <div class="group relative flex h-full flex-1 items-end justify-center outline-none" tabindex="0" aria-label="<%= day.strftime("%b %-d") %>: <%= pluralize(count, "message") %>">
+          <div class="w-full max-w-7 rounded-t bg-brand-600 group-hover:bg-brand-700 group-focus:bg-brand-700" style="height: <%= (count * 100.0 / scale_max).round(2) %>%"></div>
+          <div class="pointer-events-none absolute bottom-full left-1/2 z-10 mb-1 hidden -translate-x-1/2 whitespace-nowrap rounded bg-ink px-2 py-1 text-xs text-white shadow group-hover:block group-focus:block">
+            <span class="text-gray-300"><%= day.strftime("%a, %b %-d") %></span><br><span class="font-semibold"><%= pluralize(count, "message") %></span>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+  <div class="mt-2 flex gap-0.5 text-[11px] text-gray-400">
+    <% days.each_with_index do |(day, _), i| %>
+      <span class="flex-1 text-center"><%= day.strftime("%b %-d") if i.even? %></span>
+    <% end %>
+  </div>
+  <table class="sr-only">
+    <caption>Messages received per day</caption>
+    <thead><tr><th>Day</th><th>Messages</th></tr></thead>
+    <tbody><% days.each do |day, count| %><tr><td><%= day %></td><td><%= count %></td></tr><% end %></tbody>
+  </table>
+</figure>

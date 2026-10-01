@@ -1,0 +1,14 @@
+<div id="<%= dom_id(message) %>" class="flex <%= message.outbound? ? "justify-end" : "justify-start" %>">
+  <div class="max-w-[75%] rounded-lg px-3.5 py-2 text-sm <%= message.outbound? ? "bg-brand-600 text-white" : "border border-gray-200 bg-white" %>">
+    <% unless message.sent_by_customer? %>
+      <div class="mb-0.5 text-xs font-semibold text-brand-100">
+        <%= message.sent_by_ai? ? "AI agent" : message.user&.name || message.sender_type.humanize %>
+      </div>
+    <% end %>
+    <p class="whitespace-pre-wrap"><%= message.body %></p>
+    <div class="mt-1 text-right text-[10px] <%= message.outbound? ? "text-brand-100" : "text-gray-400" %>">
+      <%= message.created_at.strftime("%b %-d, %H:%M") %>
+      <% if message.outbound? %> · <%= message.delivery_status %><% end %>
+    </div>
+  </div>
+</div>

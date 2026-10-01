@@ -1,0 +1,35 @@
+<% content_for :title, @ticket.title %>
+
+<%= render "shared/page_header", pretitle: "Ticket ##{@ticket.id}", title: @ticket.title do %>
+  <%= link_to edit_ticket_path(@ticket), class: "btn" do %><%= icon :pencil, size: 16 %> Edit<% end %>
+  <%= button_to @ticket, method: :delete, form: { data: { turbo_confirm: "Delete this ticket?" } }, class: "btn btn-danger" do %><%= icon :trash, size: 16 %> Delete<% end %>
+<% end %>
+
+<div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
+  <section class="card lg:col-span-2">
+    <div class="card-header"><h2 class="card-title">Summary</h2></div>
+    <div class="card-body text-sm">
+      <p class="whitespace-pre-wrap"><%= @ticket.summary.presence || "No summary yet." %></p>
+      <% if @ticket.conversation %>
+        <%= link_to "Open conversation →", @ticket.conversation, class: "link mt-4 inline-block" %>
+      <% end %>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="card-header"><h2 class="card-title">Details</h2></div>
+    <dl class="card-body space-y-3 text-sm">
+      <div class="flex justify-between"><dt class="text-gray-500">Status</dt><dd><%= badge @ticket.status %></dd></div>
+      <div class="flex justify-between"><dt class="text-gray-500">Priority</dt><dd><%= badge @ticket.priority %></dd></div>
+      <div class="flex justify-between"><dt class="text-gray-500">Customer</dt><dd><%= link_to @ticket.contact.display_name, @ticket.contact, class: "link" %></dd></div>
+      <div class="flex justify-between"><dt class="text-gray-500">Assignee</dt><dd><%= @ticket.assignee&.name || "Unassigned" %></dd></div>
+      <div class="flex justify-between"><dt class="text-gray-500">Product interest</dt><dd><%= @ticket.product_interest.presence || "—" %></dd></div>
+      <div class="flex justify-between"><dt class="text-gray-500">Budget</dt><dd><%= @ticket.budget.presence || "—" %></dd></div>
+      <div class="flex justify-between"><dt class="text-gray-500">Created by</dt><dd><%= @ticket.source_ai? ? "AI" : "Team" %></dd></div>
+      <div class="flex justify-between"><dt class="text-gray-500">Created</dt><dd><%= time_ago_in_words(@ticket.created_at) %> ago</dd></div>
+      <% if @ticket.closed_at %>
+        <div class="flex justify-between"><dt class="text-gray-500">Closed</dt><dd><%= l @ticket.closed_at.to_date, format: :long %></dd></div>
+      <% end %>
+    </dl>
+  </section>
+</div>

@@ -1,0 +1,7 @@
+ali_inverter:
+  contact: ali
+  conversation: ali_open
+  title: 5kW inverter enquiry
+  status: open
+  priority: high
+  source: ai

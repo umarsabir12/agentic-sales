@@ -1,0 +1,47 @@
+<%= form_with model: ticket, class: "card" do |f| %>
+  <div class="card-body space-y-4">
+    <%= render "shared/errors", record: ticket %>
+    <%= f.hidden_field :conversation_id %>
+
+    <div>
+      <%= f.label :title, class: "form-label" %>
+      <%= f.text_field :title, required: true, class: "form-control" %>
+    </div>
+
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div>
+        <%= f.label :contact_id, "Customer", class: "form-label" %>
+        <%= f.collection_select :contact_id, Contact.order(:name), :id, :display_name, { prompt: "Select a customer" }, required: true, class: "form-control" %>
+      </div>
+      <div>
+        <%= f.label :assignee_id, "Assignee", class: "form-label" %>
+        <%= f.collection_select :assignee_id, User.order(:name), :id, :name, { include_blank: "Unassigned" }, class: "form-control" %>
+      </div>
+      <div>
+        <%= f.label :status, class: "form-label" %>
+        <%= f.select :status, enum_options(Ticket, :status), {}, class: "form-control" %>
+      </div>
+      <div>
+        <%= f.label :priority, class: "form-label" %>
+        <%= f.select :priority, enum_options(Ticket, :priority), {}, class: "form-control" %>
+      </div>
+      <div>
+        <%= f.label :product_interest, class: "form-label" %>
+        <%= f.text_field :product_interest, class: "form-control" %>
+      </div>
+      <div>
+        <%= f.label :budget, class: "form-label" %>
+        <%= f.text_field :budget, class: "form-control" %>
+      </div>
+    </div>
+
+    <div>
+      <%= f.label :summary, class: "form-label" %>
+      <%= f.text_area :summary, rows: 5, class: "form-control" %>
+    </div>
+  </div>
+  <div class="flex justify-end gap-2 border-t border-gray-200 px-5 py-3.5">
+    <%= link_to "Cancel", ticket.persisted? ? ticket : tickets_path, class: "btn" %>
+    <%= f.submit class: "btn btn-primary" %>
+  </div>
+<% end %>

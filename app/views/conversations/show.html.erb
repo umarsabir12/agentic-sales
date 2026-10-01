@@ -1,0 +1,81 @@
+<% content_for :title, @conversation.contact.display_name %>
+<%= turbo_stream_from @conversation %>
+
+<%= render "shared/page_header", pretitle: "Conversation", title: @conversation.contact.display_name do %>
+  <% if @conversation.ai_active? %>
+    <%= button_to take_over_conversation_path(@conversation), method: :patch, class: "btn btn-primary" do %><%= icon :user_check, size: 16 %> Take over<% end %>
+  <% elsif @conversation.human_active? %>
+    <%= button_to hand_back_conversation_path(@conversation), method: :patch, class: "btn" do %><%= icon :robot, size: 16 %> Hand back to AI<% end %>
+  <% end %>
+  <% if @conversation.closed? %>
+    <%= button_to "Reopen", reopen_conversation_path(@conversation), method: :patch, class: "btn" %>
+  <% else %>
+    <%= button_to "Close", close_conversation_path(@conversation), method: :patch, class: "btn" %>
+  <% end %>
+<% end %>
+
+<div class="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_18rem]">
+  <section class="card flex h-[calc(100vh-16.5rem)] min-h-[28rem] flex-col">
+    <div class="card-header">
+      <div class="flex items-center gap-3">
+        <span class="avatar h-9 w-9 text-sm"><%= @conversation.contact.display_name.first.upcase %></span>
+        <div class="leading-tight">
+          <div class="font-medium"><%= @conversation.contact.display_name %></div>
+          <div class="text-xs text-gray-500">+<%= @conversation.contact.phone %></div>
+        </div>
+      </div>
+      <%= badge @conversation.status %>
+    </div>
+
+    <div id="messages" class="flex-1 space-y-3 overflow-y-auto bg-page/60 p-5">
+      <%= render @messages %>
+    </div>
+
+    <div class="border-t border-gray-200 p-4">
+      <% if @conversation.closed? %>
+        <p class="text-sm text-gray-500">This conversation is closed.</p>
+      <% elsif !@conversation.within_service_window? %>
+        <p class="text-sm text-gray-500">The 24-hour reply window has expired. The customer must message again before you can reply.</p>
+      <% else %>
+        <%= form_with model: [ @conversation, Message.new ], class: "flex items-end gap-2" do |f| %>
+          <%= f.text_area :body, rows: 2, required: true, placeholder: "Type a reply…", class: "form-control resize-none" %>
+          <%= f.button class: "btn btn-primary" do %><%= icon :send, size: 16 %> Send<% end %>
+        <% end %>
+        <% if @conversation.ai_active? %>
+          <p class="form-hint">Sending a reply will pause the AI on this conversation.</p>
+        <% end %>
+      <% end %>
+    </div>
+  </section>
+
+  <aside class="space-y-4">
+    <section class="card">
+      <div class="card-header"><h2 class="card-title">Contact</h2></div>
+      <dl class="card-body space-y-3 text-sm">
+        <div><dt class="text-gray-500">Name</dt><dd class="font-medium"><%= @conversation.contact.name.presence || "—" %></dd></div>
+        <div><dt class="text-gray-500">WhatsApp name</dt><dd><%= @conversation.contact.profile_name.presence || "—" %></dd></div>
+        <div><dt class="text-gray-500">Assigned to</dt><dd><%= @conversation.assigned_user&.name || "—" %></dd></div>
+        <div><%= link_to "View contact", @conversation.contact, class: "link" %></div>
+      </dl>
+    </section>
+
+    <section class="card">
+      <div class="card-header">
+        <h2 class="card-title">Tickets</h2>
+        <%= link_to new_ticket_path(conversation_id: @conversation.id), class: "btn btn-sm" do %><%= icon :plus, size: 14 %> New<% end %>
+      </div>
+      <% if @tickets.any? %>
+        <ul class="divide-y divide-gray-100 text-sm">
+          <% @tickets.each do |ticket| %>
+            <li class="px-5 py-3">
+              <%= link_to ticket.title, ticket, class: "font-medium hover:underline" %>
+              <div class="mt-1 flex gap-1"><%= badge ticket.status %> <%= badge ticket.priority %></div>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <p class="card-body text-sm text-gray-500">No tickets yet.</p>
+      <% end %>
+    </section>
+  </aside>
+</div>

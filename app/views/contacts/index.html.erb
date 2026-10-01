@@ -1,0 +1,35 @@
+<% content_for :title, "Contacts" %>
+
+<%= render "shared/page_header", pretitle: "Customers", title: "Contacts" %>
+
+<section class="card">
+  <div class="card-header">
+    <%= form_with url: contacts_path, method: :get, class: "relative" do |f| %>
+      <span class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-gray-400"><%= icon :search, size: 16 %></span>
+      <%= f.search_field :q, value: params[:q], placeholder: "Search name or phone", class: "form-control w-72 py-1.5 pl-9" %>
+    <% end %>
+    <span class="text-xs text-gray-500"><%= pluralize(@contacts.size, "contact") %></span>
+  </div>
+  <div class="overflow-x-auto">
+    <table class="table">
+      <thead><tr><th>Name</th><th>Phone</th><th>Added</th></tr></thead>
+      <tbody>
+        <% @contacts.each do |contact| %>
+          <tr class="hover:bg-gray-50">
+            <td>
+              <%= link_to contact, class: "flex items-center gap-3" do %>
+                <span class="avatar h-8 w-8 text-xs"><%= contact.display_name.first.upcase %></span>
+                <span class="font-medium hover:underline"><%= contact.display_name %></span>
+              <% end %>
+            </td>
+            <td class="tabular-nums text-gray-600">+<%= contact.phone %></td>
+            <td class="text-gray-500"><%= l contact.created_at.to_date, format: :long %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  <% if @contacts.empty? %>
+    <p class="px-5 py-10 text-center text-sm text-gray-500">No contacts found.</p>
+  <% end %>
+</section>

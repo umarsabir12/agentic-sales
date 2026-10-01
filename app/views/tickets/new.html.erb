@@ -1,0 +1,5 @@
+<% content_for :title, "New ticket" %>
+<div class="max-w-3xl">
+  <%= render "shared/page_header", pretitle: "Sales", title: "New ticket" %>
+  <%= render "form", ticket: @ticket %>
+</div>

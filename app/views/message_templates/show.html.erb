@@ -1,0 +1,38 @@
+<% content_for :title, @template.name %>
+
+<%= render "shared/page_header", pretitle: "Template", title: @template.name do %>
+  <% if @template.sendable? %>
+    <%= link_to new_conversation_path(template_id: @template.id), class: "btn btn-primary" do %><%= icon :send, size: 16 %> Send to a number<% end %>
+  <% end %>
+  <% if current_user.admin? %>
+    <%= button_to message_template_path(@template), method: :delete, form: { data: { turbo_confirm: "Delete this template from your WhatsApp account? This can't be undone." } }, class: "btn btn-danger" do %><%= icon :trash, size: 16 %> Delete<% end %>
+  <% end %>
+<% end %>
+
+<div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
+  <section class="card lg:col-span-2">
+    <div class="card-header"><h2 class="card-title">Preview</h2></div>
+    <div class="card-body"><%= render "preview", template: @template %></div>
+  </section>
+
+  <section class="card">
+    <div class="card-header"><h2 class="card-title">Details</h2></div>
+    <dl class="card-body space-y-3 text-sm">
+      <div class="flex justify-between"><dt class="text-gray-500">Status</dt><dd><%= badge @template.status %></dd></div>
+      <div class="flex justify-between"><dt class="text-gray-500">Category</dt><dd><%= @template.category.humanize %></dd></div>
+      <div class="flex justify-between"><dt class="text-gray-500">Language</dt><dd><%= MessageTemplate::LANGUAGES.fetch(@template.language, @template.language) %></dd></div>
+      <div class="flex justify-between"><dt class="text-gray-500">Variables</dt><dd><%= @template.variable_count %></dd></div>
+      <% if @template.synced_at %>
+        <div class="flex justify-between"><dt class="text-gray-500">Last synced</dt><dd><%= time_ago_in_words(@template.synced_at) %> ago</dd></div>
+      <% end %>
+      <% if @template.rejected_reason.present? %>
+        <div class="rounded-md bg-red-50 px-3 py-2 text-red-700"><strong>Rejected:</strong> <%= @template.rejected_reason.humanize %></div>
+      <% end %>
+      <% if @template.pending? %>
+        <p class="form-hint">Meta is reviewing this template. Its status updates automatically, or click "Sync from Meta" on the templates page.</p>
+      <% elsif @template.approved? && !@template.sendable? %>
+        <p class="form-hint">This template uses a media header or dynamic buttons, which the portal can't send yet.</p>
+      <% end %>
+    </dl>
+  </section>
+</div>

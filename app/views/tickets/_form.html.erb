@@ -30,7 +30,11 @@
         <%= f.text_field :product_interest, class: "form-control" %>
       </div>
       <div>
-        <%= f.label :budget, class: "form-label" %>
+        <%= f.label :value, "Deal value (#{Rails.configuration.x.currency})", class: "form-label" %>
+        <%= f.number_field :value, min: 0, step: "any", placeholder: "300000", class: "form-control" %>
+      </div>
+      <div>
+        <%= f.label :budget, "Budget mentioned by customer", class: "form-label" %>
         <%= f.text_field :budget, class: "form-control" %>
       </div>
     </div>

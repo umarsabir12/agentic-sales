@@ -1,0 +1,88 @@
+<% content_for :title, "New template" %>
+
+<%= render "shared/page_header", pretitle: "Templates", title: "New template" %>
+
+<%= form_with model: @template, url: message_templates_path, data: { controller: "template-form", template_form_examples_value: @template.body_examples.to_json } do |f| %>
+  <div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
+    <section class="card lg:col-span-2">
+      <div class="card-body space-y-4">
+        <%= render "shared/errors", record: @template %>
+
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <div class="sm:col-span-3">
+            <%= f.label :name, class: "form-label" %>
+            <%= f.text_field :name, required: true, placeholder: "quote_follow_up", class: "form-control" %>
+            <p class="form-hint">Lowercase letters, numbers and underscores. Spaces are converted automatically.</p>
+          </div>
+          <div>
+            <%= f.label :category, class: "form-label" %>
+            <%= f.select :category, MessageTemplate::CATEGORIES.map { |c| [ c.humanize, c ] }, {}, class: "form-control" %>
+          </div>
+          <div>
+            <%= f.label :language, class: "form-label" %>
+            <%= f.select :language, MessageTemplate::LANGUAGES.invert, {}, class: "form-control" %>
+          </div>
+        </div>
+        <p class="form-hint -mt-2"><strong>Utility</strong>: updates about an existing request (quotes, orders, appointments). <strong>Marketing</strong>: promotions and offers. Meta may re-categorise, and marketing costs more.</p>
+
+        <div>
+          <%= f.label :header_text, "Header (optional)", class: "form-label" %>
+          <%= f.text_field :header_text, maxlength: 60, class: "form-control", data: { template_form_target: "header", action: "input->template-form#update" } %>
+        </div>
+
+        <div>
+          <%= f.label :body, "Message", class: "form-label" %>
+          <%= f.text_area :body, rows: 6, required: true, maxlength: 1024, class: "form-control",
+                placeholder: "Hi {{1}}, thanks for your interest in {{2}}. Your quote is ready — reply YES and we'll call you.",
+                data: { template_form_target: "body", action: "input->template-form#update" } %>
+          <p class="form-hint">Use {{1}}, {{2}}… for values you fill in when sending, such as the customer's name.</p>
+        </div>
+
+        <div data-examples-wrapper class="space-y-2 rounded-md border border-gray-200 bg-gray-50 p-3">
+          <p class="text-sm font-medium">Sample values</p>
+          <p class="form-hint -mt-1">Meta reviews the template with these examples.</p>
+          <div class="grid grid-cols-1 gap-2 sm:grid-cols-2" data-template-form-target="examples"></div>
+        </div>
+
+        <div>
+          <%= f.label :footer, "Footer (optional)", class: "form-label" %>
+          <%= f.text_field :footer, maxlength: 60, placeholder: "Reply STOP to opt out", class: "form-control", data: { template_form_target: "footer", action: "input->template-form#update" } %>
+        </div>
+
+        <div class="space-y-3" data-template-form-target="buttons">
+          <div>
+            <%= f.label :quick_replies, "Quick reply buttons (optional, one per line, max 3)", class: "form-label" %>
+            <%= f.text_area :quick_replies, value: @template.quick_replies.join("\n"), rows: 3, placeholder: "Yes, call me\nNot now", class: "form-control",
+                  data: { button_label: true, action: "input->template-form#update" } %>
+          </div>
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div>
+              <%= label_tag "message_template_url_button_text", "Link button text (optional)", class: "form-label" %>
+              <%= text_field_tag "message_template[url_button][text]", @template.url_button["text"], id: "message_template_url_button_text", maxlength: 25, placeholder: "View catalogue", class: "form-control",
+                    data: { button_label: true, action: "input->template-form#update" } %>
+            </div>
+            <div>
+              <%= label_tag "message_template_url_button_url", "Link URL", class: "form-label" %>
+              <%= url_field_tag "message_template[url_button][url]", @template.url_button["url"], id: "message_template_url_button_url", placeholder: "https://example.com", class: "form-control" %>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="flex justify-end gap-2 border-t border-gray-200 px-5 py-3.5">
+        <%= link_to "Cancel", message_templates_path, class: "btn" %>
+        <%= f.submit "Submit for review", class: "btn btn-primary" %>
+      </div>
+    </section>
+
+    <aside>
+      <section class="card sticky top-4">
+        <div class="card-header"><h2 class="card-title">Preview</h2></div>
+        <div class="card-body">
+          <div class="rounded-lg bg-page p-4">
+            <div data-template-form-target="preview"></div>
+          </div>
+        </div>
+      </section>
+    </aside>
+  </div>
+<% end %>

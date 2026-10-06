@@ -1,0 +1,35 @@
+<% content_for :title, "Templates" %>
+
+<%= render "shared/page_header", pretitle: "WhatsApp", title: "Message templates" do %>
+  <%= button_to sync_message_templates_path, class: "btn" do %><%= icon :refresh, size: 16 %> Sync from Meta<% end %>
+  <% if current_user.admin? %>
+    <%= link_to new_message_template_path, class: "btn btn-primary" do %><%= icon :plus, size: 16 %> New template<% end %>
+  <% end %>
+<% end %>
+
+<div class="mb-4 rounded-md border border-brand-100 bg-brand-50 px-4 py-3 text-sm text-brand-800">
+  Templates are pre-approved messages. They're the only way to message a customer first, or after 24 hours without a reply from them.
+  New templates are reviewed by Meta, usually within minutes.
+</div>
+
+<section class="card overflow-x-auto">
+  <table class="table">
+    <thead><tr><th>Name</th><th>Category</th><th>Language</th><th>Status</th><th>Message</th></tr></thead>
+    <tbody>
+      <% @templates.each do |template| %>
+        <tr class="hover:bg-gray-50">
+          <td><%= link_to template.name, template, class: "font-medium hover:underline" %></td>
+          <td class="text-gray-600"><%= template.category.humanize %></td>
+          <td class="text-gray-600"><%= MessageTemplate::LANGUAGES.fetch(template.language, template.language) %></td>
+          <td><%= badge template.status %></td>
+          <td class="max-w-md truncate text-gray-500"><%= template.body %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+  <% if @templates.empty? %>
+    <div class="px-5 py-10 text-center text-sm text-gray-500">
+      No templates yet. Click <strong>Sync from Meta</strong> to import the ones on your WhatsApp account (every account starts with <code>hello_world</code>).
+    </div>
+  <% end %>
+</section>

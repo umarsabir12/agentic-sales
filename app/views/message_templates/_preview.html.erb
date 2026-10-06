@@ -1,0 +1,12 @@
+<%# WhatsApp-style rendering of a template. %>
+<div class="rounded-lg bg-page p-4">
+  <div class="max-w-sm rounded-lg border border-gray-200 bg-surface px-3.5 py-2.5 text-sm shadow-sm">
+    <% if template.header_text.present? %><div class="mb-1 font-semibold"><%= template.header_text %></div><% end %>
+    <% if template.header_format.present? && template.header_format != "TEXT" %><div class="mb-1 text-xs text-gray-500">[<%= template.header_format.humanize %> header]</div><% end %>
+    <p class="whitespace-pre-wrap"><%= template.body %></p>
+    <% if template.footer.present? %><div class="mt-1 text-xs text-gray-500"><%= template.footer %></div><% end %>
+  </div>
+  <% template.buttons.each do |button| %>
+    <div class="mt-1 max-w-sm rounded-md border border-gray-200 bg-surface py-1.5 text-center text-sm font-medium text-brand-600"><%= button["text"] %></div>
+  <% end %>
+</div>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_10_01_150345) do
+ActiveRecord::Schema[8.0].define(version: 2026_10_05_205710) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -37,6 +37,27 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_01_150345) do
     t.index ["last_message_at"], name: "index_conversations_on_last_message_at"
   end
 
+  create_table "message_templates", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "language", default: "en_US", null: false
+    t.string "category", null: false
+    t.string "status", default: "DRAFT", null: false
+    t.string "wa_template_id"
+    t.string "header_format"
+    t.string "header_text"
+    t.text "body", null: false
+    t.jsonb "body_examples", default: [], null: false
+    t.string "footer"
+    t.jsonb "buttons", default: [], null: false
+    t.string "rejected_reason"
+    t.datetime "synced_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.jsonb "components", default: [], null: false
+    t.index ["name", "language"], name: "index_message_templates_on_name_and_language", unique: true
+    t.index ["wa_template_id"], name: "index_message_templates_on_wa_template_id", unique: true
+  end
+
   create_table "messages", force: :cascade do |t|
     t.bigint "conversation_id", null: false
     t.integer "direction", null: false
@@ -48,6 +69,10 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_01_150345) do
     t.datetime "sent_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "error_message"
+    t.string "template_name"
+    t.string "template_language"
+    t.jsonb "template_params", default: [], null: false
     t.index ["conversation_id"], name: "index_messages_on_conversation_id"
     t.index ["user_id"], name: "index_messages_on_user_id"
     t.index ["wa_message_id"], name: "index_messages_on_wa_message_id", unique: true
@@ -67,6 +92,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_01_150345) do
     t.datetime "closed_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.decimal "value", precision: 14, scale: 2
     t.index ["assignee_id"], name: "index_tickets_on_assignee_id"
     t.index ["contact_id"], name: "index_tickets_on_contact_id"
     t.index ["conversation_id"], name: "index_tickets_on_conversation_id"

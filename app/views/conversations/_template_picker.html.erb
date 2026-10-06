@@ -1,0 +1,17 @@
+<%# Template select + one input per variable + live preview. `f` is a form builder scoped to :outreach. %>
+<% templates = MessageTemplate.approved.alphabetical.select(&:sendable?) %>
+<div class="space-y-3" data-controller="template-picker" data-template-picker-name-value="outreach" data-template-picker-params-value="<%= Array(outreach.template_params).to_json %>">
+  <div>
+    <%= f.label :template_id, "Template", class: "form-label" %>
+    <select name="outreach[template_id]" id="outreach_template_id" required class="form-control" data-template-picker-target="select" data-action="template-picker#change">
+      <%= template_options(templates, outreach.template_id) %>
+    </select>
+    <% if templates.empty? %>
+      <p class="form-hint">No approved templates yet. <%= link_to "Sync or create templates", message_templates_path, class: "link" %>.</p>
+    <% end %>
+  </div>
+  <div class="grid grid-cols-1 gap-3 sm:grid-cols-2" data-template-picker-target="fields"></div>
+  <div class="rounded-lg bg-page p-3">
+    <div class="max-w-sm whitespace-pre-wrap rounded-lg border border-gray-200 bg-surface px-3.5 py-2.5 text-sm" data-template-picker-target="preview"></div>
+  </div>
+</div>

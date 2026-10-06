@@ -1,0 +1,31 @@
+<% content_for :title, "New conversation" %>
+
+<div class="max-w-3xl">
+  <%= render "shared/page_header", pretitle: "Inbox", title: "New conversation" %>
+
+  <div class="mb-4 rounded-md border border-brand-100 bg-brand-50 px-4 py-3 text-sm text-brand-800">
+    WhatsApp only lets businesses start a conversation with an approved template. When the customer replies, you can chat freely for 24 hours.
+  </div>
+
+  <%= form_with model: @outreach, scope: :outreach, url: conversations_path, class: "card" do |f| %>
+    <div class="card-body space-y-4">
+      <%= render "shared/errors", record: @outreach %>
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div>
+          <%= f.label :phone, "WhatsApp number", class: "form-label" %>
+          <%= f.telephone_field :phone, required: true, placeholder: "+92 300 1234567", class: "form-control" %>
+          <p class="form-hint">Include the country code.</p>
+        </div>
+        <div>
+          <%= f.label :name, "Customer name (optional)", class: "form-label" %>
+          <%= f.text_field :name, class: "form-control" %>
+        </div>
+      </div>
+      <%= render "template_picker", f: f, outreach: @outreach %>
+    </div>
+    <div class="flex justify-end gap-2 border-t border-gray-200 px-5 py-3.5">
+      <%= link_to "Cancel", conversations_path, class: "btn" %>
+      <%= f.button class: "btn btn-primary" do %><%= icon :send, size: 16 %> Send template<% end %>
+    </div>
+  <% end %>
+</div>

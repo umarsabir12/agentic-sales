@@ -1,0 +1,16 @@
+quote_follow_up:
+  name: quote_follow_up
+  language: en_US
+  category: UTILITY
+  status: APPROVED
+  wa_template_id: "1001"
+  body: "Hi {{1}}, your quote for {{2}} is ready. Reply YES and we'll call you."
+  body_examples: ["Ali", "a 5kW inverter"]
+
+pending_promo:
+  name: pending_promo
+  language: en_US
+  category: MARKETING
+  status: PENDING
+  wa_template_id: "1002"
+  body: "Our winter sale has started!"

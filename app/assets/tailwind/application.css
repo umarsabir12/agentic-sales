@@ -1,47 +1,126 @@
 @import "tailwindcss";
 
-/* Accent color used across the portal. Change these values to re-theme. */
+/*
+ * Theme tokens. Light values live in @theme; dark values are swapped in under
+ * [data-theme="dark"] (set on <html> by the theme toggle). Because Tailwind utilities
+ * read these variables, classes like bg-surface, text-gray-500 or bg-amber-50 adapt
+ * to the theme without needing separate dark: variants in the markup.
+ */
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
 
-  --color-brand-50: #eef5fc;
-  --color-brand-100: #d4e5f7;
-  --color-brand-200: #a9cbef;
-  --color-brand-500: #2b84dc;
-  --color-brand-600: #066fd1;
-  --color-brand-700: #0559ab;
-  --color-brand-800: #044686;
+  --color-brand-50: #eef4fe;
+  --color-brand-100: #d6e4fd;
+  --color-brand-200: #adc8fb;
+  --color-brand-500: #3b7cf0;
+  --color-brand-600: #2563eb;
+  --color-brand-700: #1d4fd7;
+  --color-brand-800: #1e40af;
 
-  --color-page: #f6f8fb;
-  --color-ink: #182433;
+  --color-page: #f5f7fb;
+  --color-surface: #ffffff;
+  --color-ink: #111827;
+
+  --color-primary: #2563eb;
+  --color-primary-hover: #1d4fd7;
+  --color-on-primary: #ffffff;
+  --color-attention: #92400e;
+  --color-on-attention: #ffffff;
+
+  /* Chart series (validated with the dataviz palette checker for each theme). */
+  --color-series-ai: #7c5ce6;
+  --color-series-team: #e09a2c;
 }
 
 @layer base {
+  html { color-scheme: light; }
   body { @apply bg-page text-ink antialiased; }
+
+  [data-theme="dark"] {
+    color-scheme: dark;
+
+    --color-page: #0b1222;
+    --color-surface: #111a2e;
+    --color-ink: #e7ecf5;
+
+    --color-gray-50: #16213a;
+    --color-gray-100: #1b2742;
+    --color-gray-200: #24324f;
+    --color-gray-300: #2f3f60;
+    --color-gray-400: #64748f;
+    --color-gray-500: #8a97b0;
+    --color-gray-600: #a6b1c6;
+    --color-gray-700: #c5cddc;
+    --color-gray-900: #f1f4f9;
+
+    --color-brand-50: rgb(88 140 255 / 0.14);
+    --color-brand-100: rgb(88 140 255 / 0.28);
+    --color-brand-200: rgb(88 140 255 / 0.42);
+    --color-brand-500: #6d9dff;
+    --color-brand-600: #4f86f7;
+    --color-brand-700: #8db3ff;
+    --color-brand-800: #c4d7ff;
+
+    --color-primary: #5b8ff9;
+    --color-primary-hover: #7aa5fb;
+    --color-on-primary: #0b1222;
+    --color-attention: #f5b13d;
+    --color-on-attention: #1a1204;
+
+    --color-amber-50: rgb(245 177 61 / 0.14);
+    --color-amber-100: rgb(245 177 61 / 0.24);
+    --color-amber-200: rgb(245 177 61 / 0.35);
+    --color-amber-700: #f5c063;
+    --color-amber-800: #f8d28d;
+    --color-green-50: rgb(52 211 153 / 0.13);
+    --color-green-200: rgb(52 211 153 / 0.3);
+    --color-green-700: #5fdcab;
+    --color-green-800: #8ee8c4;
+    --color-red-50: rgb(248 113 113 / 0.14);
+    --color-red-200: rgb(248 113 113 / 0.32);
+    --color-red-700: #fb9a9a;
+    --color-sky-50: rgb(56 189 248 / 0.14);
+    --color-sky-700: #7dd3fc;
+    --color-orange-50: rgb(251 146 60 / 0.14);
+    --color-orange-700: #fdba74;
+    --color-violet-50: rgb(134 112 230 / 0.18);
+    --color-violet-500: #8670e6;
+    --color-violet-700: #b6a8f6;
+
+    --color-series-ai: #8670e6;
+    --color-series-team: #c0821f;
+  }
 }
 
 @layer components {
-  .card { @apply rounded-md border border-gray-200 bg-white shadow-[0_1px_2px_rgba(24,36,51,0.04)]; }
+  .card { @apply rounded-lg border border-gray-200 bg-surface shadow-[0_1px_2px_rgba(16,24,40,0.04)]; }
   .card-header { @apply flex items-center justify-between gap-4 border-b border-gray-200 px-5 py-3.5; }
   .card-title { @apply text-[15px] font-semibold; }
   .card-body { @apply p-5; }
 
   .pretitle { @apply text-[11px] font-semibold uppercase tracking-wider text-gray-500; }
 
-  .btn { @apply inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-md border border-gray-300 bg-white px-3.5 py-2 text-sm font-medium text-ink shadow-[0_1px_1px_rgba(24,36,51,0.04)] hover:bg-gray-50; }
-  .btn-primary { @apply border-brand-600 bg-brand-600 text-white hover:bg-brand-700; }
+  .btn { @apply inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-md border border-gray-300 bg-surface px-3.5 py-2 text-sm font-medium text-ink hover:bg-gray-50; }
+  .btn-primary { @apply border-primary bg-primary text-on-primary hover:border-primary-hover hover:bg-primary-hover; }
+  .btn-attention { @apply border-attention bg-attention text-on-attention hover:opacity-90; }
   .btn-danger { @apply border-red-200 text-red-700 hover:bg-red-50; }
   .btn-sm { @apply px-2.5 py-1.5 text-xs; }
+  .btn-xs { @apply rounded px-2 py-1 text-[11px]; }
 
   .form-label { @apply mb-1.5 block text-sm font-medium; }
-  .form-control { @apply block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-ink placeholder:text-gray-400 focus:border-brand-500 focus:outline-none focus:ring-3 focus:ring-brand-100; }
+  .form-control { @apply block w-full rounded-md border border-gray-300 bg-surface px-3 py-2 text-sm text-ink placeholder:text-gray-400 focus:border-brand-500 focus:outline-none focus:ring-3 focus:ring-brand-100; }
   .form-hint { @apply mt-1 text-xs text-gray-500; }
 
   .table { @apply w-full text-sm; }
-  .table th { @apply border-b border-gray-200 bg-gray-50/60 px-5 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500; }
+  .table th { @apply border-b border-gray-200 px-5 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500; }
   .table td { @apply border-b border-gray-100 px-5 py-3 align-middle; }
   .table tr:last-child td { @apply border-b-0; }
 
   .avatar { @apply inline-flex shrink-0 items-center justify-center rounded-full bg-brand-50 font-semibold text-brand-700; }
   .link { @apply text-brand-600 hover:underline; }
+
+  .chip { @apply inline-flex items-center rounded px-1.5 py-0.5 text-[11px] font-medium; }
+
+  .nav-pill { @apply flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-ink; }
+  .nav-pill-active { @apply bg-brand-50 font-medium text-brand-700 hover:bg-brand-50 hover:text-brand-700; }
 }

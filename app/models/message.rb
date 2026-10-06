@@ -12,6 +12,12 @@ class Message < ApplicationRecord
 
   after_create_commit :touch_conversation
   after_create_commit -> { broadcast_append_later_to conversation, target: "messages" }
+  after_create_commit -> { SendWhatsappMessageJob.perform_later(self) }, if: -> { outbound? && pending? }
+  after_update_commit -> { broadcast_replace_later_to conversation }
+
+  def template?
+    template_name.present?
+  end
 
   private
     def touch_conversation

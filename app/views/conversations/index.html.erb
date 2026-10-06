@@ -1,7 +1,9 @@
 <% content_for :title, "Inbox" %>
 <%= turbo_stream_from :conversations %>
 
-<%= render "shared/page_header", pretitle: "WhatsApp", title: "Inbox" %>
+<%= render "shared/page_header", pretitle: "WhatsApp", title: "Inbox" do %>
+  <%= link_to new_conversation_path, class: "btn btn-primary" do %><%= icon :plus, size: 16 %> New conversation<% end %>
+<% end %>
 
 <section class="card">
   <div class="card-header">

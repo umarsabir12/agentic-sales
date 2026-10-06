@@ -1,0 +1,42 @@
+<%# Stacked bars per day: AI agent replies (bottom) and team replies (top). Legend sits in the card header. %>
+<% max = days.map { |_, ai, team| ai + team }.max.to_i %>
+<% scale_max = max.zero? ? 4 : (max / 4.0).ceil * 4 %>
+<% label_every = days.size > 14 ? 5 : 2 %>
+
+<figure aria-label="Replies to customers per day, by AI agent and team" class="pl-7">
+  <div class="relative h-56">
+    <% 0.upto(4) do |i| %>
+      <div class="pointer-events-none absolute inset-x-0 border-t <%= i.zero? ? "border-gray-300" : "border-dashed border-gray-200" %>" style="bottom: <%= i * 25 %>%">
+        <span class="absolute right-full mr-2 -translate-y-1/2 text-[11px] tabular-nums text-gray-400"><%= scale_max * i / 4 %></span>
+      </div>
+    <% end %>
+    <div class="absolute inset-0 flex items-end gap-1">
+      <% days.each do |day, ai, team| %>
+        <div class="group relative flex h-full flex-1 flex-col items-center justify-end outline-none" tabindex="0"
+             aria-label="<%= day.strftime("%b %-d") %>: <%= ai %> by AI agent, <%= team %> by team">
+          <% if team.positive? %>
+            <div class="w-full max-w-6 rounded-t bg-series-team <%= "mb-0.5" if ai.positive? %> group-hover:opacity-80" style="height: <%= (team * 100.0 / scale_max).round(2) %>%"></div>
+          <% end %>
+          <% if ai.positive? %>
+            <div class="w-full max-w-6 bg-series-ai <%= team.positive? ? "" : "rounded-t" %> group-hover:opacity-80" style="height: <%= (ai * 100.0 / scale_max).round(2) %>%"></div>
+          <% end %>
+          <div class="pointer-events-none absolute bottom-full left-1/2 z-10 mb-1 hidden -translate-x-1/2 whitespace-nowrap rounded-md border border-gray-200 bg-surface px-2.5 py-1.5 text-xs shadow-lg group-hover:block group-focus:block">
+            <div class="mb-1 font-medium"><%= day.strftime("%a, %b %-d") %></div>
+            <div class="flex items-center gap-1.5"><span class="h-2 w-2 rounded-sm bg-series-ai"></span> AI agent <span class="ml-auto pl-3 font-semibold tabular-nums"><%= ai %></span></div>
+            <div class="flex items-center gap-1.5"><span class="h-2 w-2 rounded-sm bg-series-team"></span> Team <span class="ml-auto pl-3 font-semibold tabular-nums"><%= team %></span></div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+  <div class="mt-2 flex gap-1 text-[11px] text-gray-400">
+    <% days.each_with_index do |(day, _, _), i| %>
+      <span class="flex-1 text-center whitespace-nowrap"><%= day.strftime("%b %-d") if (days.size - 1 - i) % label_every == 0 %></span>
+    <% end %>
+  </div>
+  <table class="sr-only">
+    <caption>Replies to customers per day</caption>
+    <thead><tr><th>Day</th><th>AI agent</th><th>Team</th></tr></thead>
+    <tbody><% days.each do |day, ai, team| %><tr><td><%= day %></td><td><%= ai %></td><td><%= team %></td></tr><% end %></tbody>
+  </table>
+</figure>

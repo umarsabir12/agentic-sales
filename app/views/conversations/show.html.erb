@@ -35,7 +35,13 @@
       <% if @conversation.closed? %>
         <p class="text-sm text-gray-500">This conversation is closed.</p>
       <% elsif !@conversation.within_service_window? %>
-        <p class="text-sm text-gray-500">The 24-hour reply window has expired. The customer must message again before you can reply.</p>
+        <p class="mb-3 text-sm text-gray-500">The 24-hour reply window has closed, so only an approved template can be sent. Free-form replies open again when the customer responds.</p>
+        <%= form_with model: Outreach.new, scope: :outreach, url: conversation_messages_path(@conversation), class: "space-y-3" do |f| %>
+          <%= render "template_picker", f: f, outreach: f.object %>
+          <div class="flex justify-end">
+            <%= f.button class: "btn btn-primary" do %><%= icon :send, size: 16 %> Send template<% end %>
+          </div>
+        <% end %>
       <% else %>
         <%= form_with model: [ @conversation, Message.new ], class: "flex items-end gap-2" do |f| %>
           <%= f.text_area :body, rows: 2, required: true, placeholder: "Type a reply…", class: "form-control resize-none" %>

@@ -30,6 +30,8 @@ class TicketsController < ApplicationController
 
   def update
     if @ticket.update(ticket_params)
+      return redirect_back_or_to(@ticket, notice: "Ticket updated.") if params[:back].present?
+
       redirect_to @ticket, notice: "Ticket updated."
     else
       render :edit, status: :unprocessable_entity
@@ -47,6 +49,6 @@ class TicketsController < ApplicationController
     end
 
     def ticket_params
-      params.expect(ticket: %i[ title summary product_interest budget status priority contact_id conversation_id assignee_id ])
+      params.expect(ticket: %i[ title summary product_interest budget value status priority contact_id conversation_id assignee_id ])
     end
 end

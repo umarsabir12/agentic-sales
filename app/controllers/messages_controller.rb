@@ -1,6 +1,7 @@
 class MessagesController < ApplicationController
   def create
     @conversation = Conversation.find(params[:conversation_id])
+    return send_template if params[:outreach].present?
 
     unless @conversation.within_service_window?
       return redirect_to @conversation, alert: "The 24-hour reply window has expired. Only template messages can be sent."
@@ -18,6 +19,16 @@ class MessagesController < ApplicationController
   end
 
   private
+    def send_template
+      outreach = Outreach.new(params.expect(outreach: [ :template_id, template_params: [] ]).merge(conversation: @conversation, user: current_user))
+
+      if outreach.save
+        redirect_to @conversation, notice: "Template message queued for sending."
+      else
+        redirect_to @conversation, alert: outreach.errors.full_messages.to_sentence
+      end
+    end
+
     def message_params
       params.expect(message: [ :body ])
     end

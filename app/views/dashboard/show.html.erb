@@ -1,55 +1,117 @@
 <% content_for :title, "Dashboard" %>
 
-<%= render "shared/page_header", pretitle: "Overview", title: "Dashboard" do %>
-  <%= link_to conversations_path(status: "human_active"), class: "btn" do %>Needs attention<% end %>
+<div class="mb-5 flex flex-wrap items-end justify-between gap-4">
+  <div>
+    <div class="text-[13px] text-gray-500"><%= l Date.current, format: "%A, %-d %B" %></div>
+    <h1 class="mt-0.5 text-2xl font-semibold tracking-tight"><%= greeting %>, <%= current_user.name.split.first %></h1>
+  </div>
   <%= link_to new_ticket_path, class: "btn btn-primary" do %><%= icon :plus, size: 16 %> New ticket<% end %>
-<% end %>
-
-<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-  <%= render "stat", label: "Open conversations", value: @open_conversations, note: "#{@ai_conversations} handled by AI" %>
-  <%= render "stat", label: "Needs a human", value: @needs_human, note: "Taken over by the team" %>
-  <%= render "stat", label: "Active tickets", value: @active_tickets, note: "#{@hot_tickets} high or urgent" %>
-  <%= render "stat", label: "Won this month", value: @won_this_month, note: "#{@lost_this_month} lost" %>
 </div>
 
-<div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-  <%= render "icon_stat", icon_name: :message_in, title: pluralize(@messages_today, "message"), note: "received today" %>
-  <%= render "icon_stat", icon_name: :robot, title: pluralize(@ai_replies_today, "AI reply", plural: "AI replies"), note: "sent today" %>
-  <%= render "icon_stat", icon_name: :user_plus, title: pluralize(@new_contacts_this_week, "new contact"), note: "this week" %>
-  <%= render "icon_stat", icon_name: :ticket, title: pluralize(@tickets_this_week, "ticket"), note: "#{@ai_tickets_this_week} created by AI this week" %>
+<% if @needs_human.positive? || @unowned_hot_tickets.positive? %>
+  <div class="mb-4 flex flex-wrap items-center gap-x-6 gap-y-2 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm" role="status">
+    <span class="flex h-7 w-7 items-center justify-center rounded-md bg-amber-100 text-amber-700"><%= icon :alert, size: 16 %></span>
+    <% if @needs_human.positive? %>
+      <span><strong class="font-semibold"><%= pluralize(@needs_human, "conversation") %></strong> <%= @needs_human == 1 ? "is" : "are" %> waiting for a human reply</span>
+    <% end %>
+    <% if @unowned_hot_tickets.positive? %>
+      <span><strong class="font-semibold"><%= pluralize(@unowned_hot_tickets, "high-priority ticket") %></strong> <%= @unowned_hot_tickets == 1 ? "has" : "have" %> no owner</span>
+    <% end %>
+    <%= link_to "Open inbox", conversations_path(status: "human_active"), class: "btn btn-attention btn-sm ml-auto" %>
+  </div>
+<% end %>
+
+<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+  <div class="card card-body">
+    <div class="text-[13px] text-gray-500">Conversations today</div>
+    <div class="mt-2 flex items-baseline gap-2">
+      <span class="text-3xl font-semibold tracking-tight tabular-nums"><%= @conversations_today %></span>
+      <span class="text-xs font-medium text-green-700"><%= pluralize(@messages_today, "new message") %></span>
+    </div>
+    <div class="mt-2 text-xs text-gray-500"><%= pluralize(@new_contacts_this_week, "new contact") %> this week</div>
+  </div>
+
+  <div class="card card-body">
+    <div class="flex items-center gap-1.5 text-[13px] text-gray-500"><span class="h-2 w-2 rounded-full bg-series-ai"></span> AI resolution rate</div>
+    <div class="mt-2 text-3xl font-semibold tracking-tight tabular-nums"><%= @ai_resolution_rate %>%</div>
+    <div class="mt-2 h-1.5 overflow-hidden rounded-full bg-gray-100" role="progressbar" aria-valuenow="<%= @ai_resolution_rate %>" aria-valuemin="0" aria-valuemax="100" aria-label="AI resolution rate">
+      <div class="h-full rounded-full bg-series-ai" style="width: <%= @ai_resolution_rate %>%"></div>
+    </div>
+    <div class="mt-2 text-xs text-gray-500"><%= @ai_only_conversations %> of <%= @recent_conversations %> handled without a human <span class="text-gray-400">· 30 days</span></div>
+  </div>
+
+  <div class="card card-body">
+    <div class="text-[13px] text-gray-500">Open tickets</div>
+    <div class="mt-2 text-3xl font-semibold tracking-tight tabular-nums"><%= @active_tickets_count %></div>
+    <div class="mt-2 flex flex-wrap gap-1.5">
+      <span class="chip bg-red-50 text-red-700"><%= @hot_tickets %> high</span>
+      <span class="chip bg-amber-50 text-amber-700"><%= @unassigned_tickets %> unassigned</span>
+    </div>
+  </div>
+
+  <div class="card card-body">
+    <div class="text-[13px] text-gray-500">Won this month</div>
+    <div class="mt-2 text-3xl font-semibold tracking-tight tabular-nums"><%= money(@won_value) %></div>
+    <div class="mt-2 text-xs text-gray-500"><%= @won_count %> won · <%= @lost_count %> lost · <%= money(@pipeline_value) %> in play</div>
+  </div>
 </div>
 
 <div class="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3">
   <section class="card lg:col-span-2">
-    <div class="card-header">
-      <h2 class="card-title">Messages received</h2>
-      <span class="text-xs text-gray-500">Last <%= DashboardController::CHART_DAYS %> days</span>
+    <div class="flex flex-wrap items-start justify-between gap-3 px-5 pt-4">
+      <div>
+        <h2 class="card-title">Who answered customers</h2>
+        <div class="mt-1 flex gap-3 text-xs text-gray-500">
+          <span class="flex items-center gap-1.5"><span class="h-2.5 w-2.5 rounded-sm bg-series-ai"></span> AI agent</span>
+          <span class="flex items-center gap-1.5"><span class="h-2.5 w-2.5 rounded-sm bg-series-team"></span> Team</span>
+        </div>
+      </div>
+      <nav class="flex rounded-md border border-gray-200 bg-gray-50 p-0.5 text-xs" aria-label="Chart range">
+        <% DashboardController::RANGES.each do |days| %>
+          <%= link_to "#{days} days", root_path(range: days), class: [ "rounded px-2.5 py-1", days == @range ? "bg-surface font-medium text-ink shadow-sm" : "text-gray-500 hover:text-ink" ] %>
+        <% end %>
+      </nav>
     </div>
-    <div class="card-body">
-      <%= render "messages_chart", days: @daily_messages %>
+    <div class="px-5 pb-4 pt-3">
+      <%= render "replies_chart", days: @replies_by_day %>
     </div>
   </section>
 
   <section class="card">
     <div class="card-header">
-      <h2 class="card-title">Latest conversations</h2>
+      <h2 class="card-title">Live inbox</h2>
       <%= link_to "View all", conversations_path, class: "link text-sm" %>
     </div>
     <ul class="divide-y divide-gray-100">
-      <% @recent_conversations.each do |conversation| %>
-        <li>
-          <%= link_to conversation, class: "flex items-center gap-3 px-5 py-3 hover:bg-gray-50" do %>
-            <span class="avatar h-8 w-8 text-xs"><%= conversation.contact.display_name.first.upcase %></span>
-            <span class="min-w-0 flex-1">
-              <span class="block truncate text-sm font-medium"><%= conversation.contact.display_name %></span>
-              <span class="block text-xs text-gray-500"><%= conversation.last_message_at ? "#{time_ago_in_words(conversation.last_message_at)} ago" : "No messages" %></span>
+      <% @live_conversations.each do |conversation| %>
+        <% last = conversation.last_message %>
+        <li class="px-4 py-3">
+          <div class="flex gap-3">
+            <span class="relative">
+              <span class="avatar h-8 w-8 text-xs"><%= conversation.contact.display_name.first.upcase %></span>
+              <% if last&.inbound? %><span class="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full border-2 border-surface bg-brand-600" title="Waiting for a reply"></span><% end %>
             </span>
-            <%= badge conversation.status %>
-          <% end %>
+            <div class="min-w-0 flex-1">
+              <div class="flex items-baseline justify-between gap-2">
+                <%= link_to conversation.contact.display_name, conversation, class: "truncate text-sm font-medium hover:underline" %>
+                <span class="shrink-0 text-[11px] text-gray-400"><%= short_time_ago(conversation.last_message_at) %></span>
+              </div>
+              <p class="truncate text-xs text-gray-500"><%= last&.body || "No messages yet" %></p>
+              <div class="mt-2 flex items-center justify-between gap-2">
+                <% if conversation.human_active? %>
+                  <span class="chip bg-amber-50 text-amber-700">Needs human</span>
+                  <%= button_to "Hand back to AI", hand_back_conversation_path(conversation), method: :patch, class: "btn btn-xs" %>
+                <% else %>
+                  <span class="chip bg-violet-50 text-violet-700">AI replying</span>
+                  <%= button_to "Take over", take_over_conversation_path(conversation), method: :patch, class: "btn btn-xs" %>
+                <% end %>
+              </div>
+            </div>
+          </div>
         </li>
       <% end %>
     </ul>
-    <% if @recent_conversations.empty? %>
+    <% if @live_conversations.empty? %>
       <p class="px-5 py-8 text-center text-sm text-gray-500">No open conversations.</p>
     <% end %>
   </section>
@@ -63,22 +125,32 @@
   <div class="overflow-x-auto">
     <table class="table">
       <thead>
-        <tr><th>Ticket</th><th>Customer</th><th>Status</th><th>Priority</th><th>Assignee</th><th>Created</th></tr>
+        <tr><th>Ticket</th><th>Customer</th><th>Value</th><th>Status</th><th>Priority</th><th>Owner</th><th>Created</th></tr>
       </thead>
       <tbody>
-        <% @recent_tickets.each do |ticket| %>
+        <% @active_tickets.each do |ticket| %>
           <tr>
             <td><%= link_to ticket.title, ticket, class: "font-medium hover:underline" %></td>
             <td class="text-gray-600"><%= ticket.contact.display_name %></td>
+            <td class="tabular-nums text-gray-600"><%= money(ticket.value) %></td>
             <td><%= badge ticket.status %></td>
             <td><%= badge ticket.priority %></td>
-            <td class="text-gray-600"><%= ticket.assignee&.name || "Unassigned" %></td>
+            <td>
+              <% if ticket.assignee %>
+                <span class="flex items-center gap-2"><span class="avatar h-6 w-6 text-[10px]"><%= ticket.assignee.initials %></span><%= ticket.assignee.name %></span>
+              <% else %>
+                <%= form_with model: ticket, data: { controller: "auto-submit" } do |f| %>
+                  <%= hidden_field_tag :back, 1 %>
+                  <%= f.select :assignee_id, @team.map { |u| [ u.name, u.id ] }, { prompt: "Assign…" }, class: "form-control w-36 border-red-200 bg-red-50 py-1 text-xs text-red-700", data: { action: "auto-submit#submit" }, aria: { label: "Assign #{ticket.title}" } %>
+                <% end %>
+              <% end %>
+            </td>
             <td class="text-gray-500"><%= time_ago_in_words(ticket.created_at) %> ago</td>
           </tr>
         <% end %>
       </tbody>
     </table>
-    <% if @recent_tickets.empty? %>
+    <% if @active_tickets.empty? %>
       <p class="px-5 py-8 text-center text-sm text-gray-500">No active tickets.</p>
     <% end %>
   </div>

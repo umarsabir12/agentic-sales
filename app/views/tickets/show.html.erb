@@ -24,6 +24,7 @@
       <div class="flex justify-between"><dt class="text-gray-500">Customer</dt><dd><%= link_to @ticket.contact.display_name, @ticket.contact, class: "link" %></dd></div>
       <div class="flex justify-between"><dt class="text-gray-500">Assignee</dt><dd><%= @ticket.assignee&.name || "Unassigned" %></dd></div>
       <div class="flex justify-between"><dt class="text-gray-500">Product interest</dt><dd><%= @ticket.product_interest.presence || "—" %></dd></div>
+      <div class="flex justify-between"><dt class="text-gray-500">Deal value</dt><dd class="font-medium"><%= money(@ticket.value) %></dd></div>
       <div class="flex justify-between"><dt class="text-gray-500">Budget</dt><dd><%= @ticket.budget.presence || "—" %></dd></div>
       <div class="flex justify-between"><dt class="text-gray-500">Created by</dt><dd><%= @ticket.source_ai? ? "AI" : "Team" %></dd></div>
       <div class="flex justify-between"><dt class="text-gray-500">Created</dt><dd><%= time_ago_in_words(@ticket.created_at) %> ago</dd></div>

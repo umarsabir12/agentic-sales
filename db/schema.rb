@@ -10,9 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_10_13_120000) do
+ActiveRecord::Schema[8.0].define(version: 2026_10_13_201331) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "agent_settings", force: :cascade do |t|
+    t.boolean "enabled", default: true, null: false
+    t.string "business_name", default: "", null: false
+    t.text "instructions", default: "", null: false
+    t.string "effort", default: "medium", null: false
+    t.integer "reply_delay_seconds", default: 5, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "contacts", force: :cascade do |t|
     t.string "phone", null: false
@@ -32,6 +42,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_13_120000) do
     t.bigint "assigned_user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "handoff_reason"
+    t.datetime "handed_off_at"
     t.index ["assigned_user_id"], name: "index_conversations_on_assigned_user_id"
     t.index ["contact_id"], name: "index_conversations_on_contact_id"
     t.index ["last_message_at"], name: "index_conversations_on_last_message_at"

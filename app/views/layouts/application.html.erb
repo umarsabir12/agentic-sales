@@ -37,6 +37,7 @@
             <%= nav_link "Templates", message_templates_path, active: controller_name == "message_templates" %>
             <%= nav_link "Contacts", contacts_path, active: controller_name == "contacts" %>
             <% if current_user.admin? %>
+              <%= nav_link "AI agent", edit_admin_agent_path, active: controller_path == "admin/agent_settings" %>
               <%= nav_link "Team", admin_users_path, active: controller_path == "admin/users" %>
             <% end %>
           </nav>

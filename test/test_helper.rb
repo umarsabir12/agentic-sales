@@ -11,6 +11,9 @@ module ActiveSupport
     # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
     fixtures :all
 
-    teardown { Whatsapp.client = nil }
+    teardown do
+      Whatsapp.client = nil
+      SalesAgent.client = nil
+    end
   end
 end

@@ -32,7 +32,7 @@ class Whatsapp::WebhookProcessor
 
       conversation = contact.current_conversation || contact.conversations.create!
 
-      conversation.messages.create!(
+      message = conversation.messages.create!(
         direction: :inbound,
         sender_type: :customer,
         wa_message_id: data["id"],
@@ -40,6 +40,10 @@ class Whatsapp::WebhookProcessor
         delivery_status: :delivered,
         sent_at: Time.zone.at(data["timestamp"].to_i)
       )
+
+      if conversation.ai_active?
+        AgentReplyJob.set(wait: AgentSetting.current.reply_delay_seconds.seconds).perform_later(conversation, message)
+      end
     rescue ActiveRecord::RecordNotUnique
       # Meta delivered the same message twice concurrently; the first one won.
     end

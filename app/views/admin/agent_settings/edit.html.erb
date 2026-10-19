@@ -1,0 +1,65 @@
+<% content_for :title, "AI agent" %>
+
+<%= render "shared/page_header", pretitle: "Admin", title: "AI agent" %>
+
+<% unless SalesAgent.configured? %>
+  <div class="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+    No Anthropic API key is configured, so the agent can't reply. Set <code>ANTHROPIC_API_KEY</code> on the server (or <code>anthropic.api_key</code> in credentials).
+  </div>
+<% end %>
+
+<%= form_with model: @settings, url: admin_agent_path, method: :patch do |f| %>
+  <div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
+    <section class="card lg:col-span-2">
+      <div class="card-header"><h2 class="card-title">What the agent knows</h2></div>
+      <div class="card-body space-y-4">
+        <%= render "shared/errors", record: @settings %>
+        <div>
+          <%= f.label :business_name, class: "form-label" %>
+          <%= f.text_field :business_name, placeholder: "Tronsit Solutions", class: "form-control" %>
+        </div>
+        <div>
+          <%= f.label :instructions, "Business information and instructions", class: "form-label" %>
+          <%= f.text_area :instructions, rows: 18, class: "form-control font-mono text-[13px]",
+                placeholder: "What you sell, prices or price ranges, delivery areas, opening hours, warranty, payment options, FAQs, tone of voice, and anything the agent must never promise." %>
+          <p class="form-hint">The agent only states facts written here. Anything else, it hands to the team. Keep prices and stock up to date.</p>
+        </div>
+      </div>
+    </section>
+
+    <aside class="space-y-4">
+      <section class="card">
+        <div class="card-header"><h2 class="card-title">Behaviour</h2></div>
+        <div class="card-body space-y-4 text-sm">
+          <label class="flex items-start gap-2">
+            <%= f.check_box :enabled, class: "mt-0.5 rounded border-gray-300" %>
+            <span><span class="font-medium">Reply automatically</span><br><span class="text-gray-500">When off, new messages wait for the team.</span></span>
+          </label>
+          <div>
+            <%= f.label :effort, "Thinking effort", class: "form-label" %>
+            <%= f.select :effort, AgentSetting::EFFORTS.map { |e| [ e.humanize, e ] }, {}, class: "form-control" %>
+            <p class="form-hint">Higher is more careful but slower and costs more per reply.</p>
+          </div>
+          <div>
+            <%= f.label :reply_delay_seconds, "Wait before replying (seconds)", class: "form-label" %>
+            <%= f.number_field :reply_delay_seconds, min: 0, max: 60, class: "form-control" %>
+            <p class="form-hint">Lets customers finish typing several messages before the agent answers them together.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-header"><h2 class="card-title">What the agent does</h2></div>
+        <ul class="card-body list-disc space-y-1.5 pl-9 text-sm text-gray-600">
+          <li>Answers in the customer's language</li>
+          <li>Creates and updates a sales ticket when a customer shows buying interest</li>
+          <li>Saves the customer's name</li>
+          <li>Hands the chat to the team when asked for a person, for negotiation or orders, or when it doesn't know</li>
+          <li>Stays quiet once anyone on the team takes over</li>
+        </ul>
+      </section>
+
+      <%= f.submit "Save settings", class: "btn btn-primary w-full" %>
+    </aside>
+  </div>
+<% end %>

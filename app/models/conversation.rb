@@ -20,11 +20,16 @@ class Conversation < ApplicationRecord
   end
 
   def take_over!(user)
-    update!(status: :human_active, assigned_user: user)
+    update!(status: :human_active, assigned_user: user, handoff_reason: nil, handed_off_at: nil)
   end
 
   def hand_back_to_ai!
-    update!(status: :ai_active)
+    update!(status: :ai_active, handoff_reason: nil, handed_off_at: nil)
+  end
+
+  # The AI asks for a person: pause it and flag the conversation for the team.
+  def hand_off!(reason)
+    update!(status: :human_active, handoff_reason: reason.presence || "The AI asked for a team member", handed_off_at: Time.current)
   end
 
   def close!
@@ -32,7 +37,7 @@ class Conversation < ApplicationRecord
   end
 
   def reopen!
-    update!(status: :ai_active)
+    update!(status: :ai_active, handoff_reason: nil, handed_off_at: nil)
   end
 
   def last_message

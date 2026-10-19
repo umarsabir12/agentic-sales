@@ -14,6 +14,16 @@
   <% end %>
 <% end %>
 
+<% if @conversation.human_active? && @conversation.handoff_reason.present? %>
+  <div class="mb-4 flex items-start gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm" role="status">
+    <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-amber-100 text-amber-700"><%= icon :robot, size: 16 %></span>
+    <div>
+      <div class="font-medium">The AI handed this conversation to the team<% if @conversation.handed_off_at %> <%= time_ago_in_words(@conversation.handed_off_at) %> ago<% end %></div>
+      <div class="text-gray-600"><%= @conversation.handoff_reason %></div>
+    </div>
+  </div>
+<% end %>
+
 <div class="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_18rem]">
   <section class="card flex h-[calc(100vh-16.5rem)] min-h-[28rem] flex-col">
     <div class="card-header">

@@ -1,5 +1,5 @@
 <%= link_to conversation_path(conversation), id: dom_id(conversation), class: "flex items-center gap-4 px-5 py-3.5 hover:bg-gray-50" do %>
-  <span class="avatar h-10 w-10 text-sm"><%= conversation.contact.display_name.first.upcase %></span>
+  <span class="avatar h-10 w-10 text-sm"><%= conversation.contact.avatar_letter %></span>
   <div class="min-w-0 flex-1">
     <div class="flex items-center gap-2">
       <span class="truncate font-medium"><%= conversation.contact.display_name %></span>

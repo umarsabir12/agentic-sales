@@ -3,9 +3,11 @@ admin:
   email: admin@example.com
   encrypted_password: <%= Devise::Encryptor.digest(User, "password") %>
   role: admin
+  approved_at: <%= 1.day.ago.to_fs(:db) %>
 
 agent:
   name: Sales Agent
   email: agent@example.com
   encrypted_password: <%= Devise::Encryptor.digest(User, "password") %>
   role: agent
+  approved_at: <%= 1.day.ago.to_fs(:db) %>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html class="h-full" data-theme="<%= current_theme %>">
+  <head>
+    <title><%= [content_for(:title), "Tronsit Sales Agent"].compact.join(" · ") %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="min-h-full">
+    <div class="grid min-h-screen lg:grid-cols-2">
+      <aside class="auth-panel relative hidden flex-col overflow-hidden px-12 py-10 text-white lg:flex xl:px-16">
+        <%= render "shared/auth_logo", inverse: true %>
+        <div class="my-auto max-w-lg py-12">
+          <%= yield :auth_aside %>
+        </div>
+      </aside>
+
+      <main class="relative flex flex-col items-center justify-center overflow-hidden px-6 py-12">
+        <div class="pointer-events-none absolute -right-32 -top-32 h-80 w-80 rounded-full bg-brand-100 opacity-60 blur-3xl" aria-hidden="true"></div>
+        <div class="pointer-events-none absolute -bottom-40 -left-24 h-80 w-80 rounded-full bg-violet-50 opacity-70 blur-3xl" aria-hidden="true"></div>
+        <div class="relative w-full max-w-sm">
+          <div class="mb-10 lg:hidden"><%= render "shared/auth_logo", inverse: false %></div>
+          <%= render "shared/flash" %>
+          <%= yield %>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

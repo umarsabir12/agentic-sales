@@ -1,0 +1,32 @@
+<%# Decorative: a phone showing the AI answering a customer, with floating result badges. %>
+<div class="relative mt-12 w-72" aria-hidden="true">
+  <div class="absolute -inset-6 rounded-[3rem] bg-white/10 blur-2xl"></div>
+
+  <div class="relative rounded-[2.4rem] border-[7px] border-[#0f172a] bg-[#0f172a] shadow-2xl shadow-black/40">
+    <div class="absolute left-1/2 top-1.5 z-10 h-4 w-20 -translate-x-1/2 rounded-full bg-[#0f172a]"></div>
+    <div class="overflow-hidden rounded-[1.9rem] bg-[#efeae2]">
+      <div class="flex items-center gap-2.5 bg-[#075e54] px-4 pb-3 pt-7 text-white">
+        <span class="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-xs font-semibold">A</span>
+        <div class="leading-tight">
+          <div class="text-sm font-semibold">Ali Khan</div>
+          <div class="text-[10px] text-white/75">online</div>
+        </div>
+      </div>
+      <div class="space-y-2.5 px-3 py-4 text-[12.5px] text-[#111827]">
+        <div class="w-fit max-w-[85%] rounded-lg rounded-tl-none bg-white px-3 py-2 shadow-sm">Price for a 5kW hybrid inverter with installation?<div class="mt-0.5 text-right text-[9px] text-[#6b7280]">10:41</div></div>
+        <div class="ml-auto w-fit max-w-[88%] rounded-lg rounded-tr-none bg-[#d9fdd3] px-3 py-2 shadow-sm">Happy to help! Which city are you in? I'll get a sales rep to send you an exact quote.<div class="mt-0.5 text-right text-[9px] text-[#6b7280]">10:41 ✓✓</div></div>
+        <div class="w-fit max-w-[85%] rounded-lg rounded-tl-none bg-white px-3 py-2 shadow-sm">Lahore. Need it this month.<div class="mt-0.5 text-right text-[9px] text-[#6b7280]">10:42</div></div>
+        <div class="ml-auto w-fit max-w-[88%] rounded-lg rounded-tr-none bg-[#d9fdd3] px-3 py-2 shadow-sm">Got it! Sara from our team will call you today. 👍<div class="mt-0.5 text-right text-[9px] text-[#6b7280]">10:42 ✓✓</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="absolute -right-24 top-24 flex items-center gap-2 rounded-xl bg-white px-3 py-2 text-[12px] font-semibold text-[#111827] shadow-xl shadow-black/20">
+    <span class="flex h-6 w-6 items-center justify-center rounded-lg bg-[#efeafd] text-[#6d4fd8]"><%= icon :robot, size: 14 %></span>
+    AI replied in 4s
+  </div>
+  <div class="absolute -bottom-6 -right-20 flex items-center gap-2 rounded-xl bg-white px-3 py-2 text-[12px] font-semibold text-[#111827] shadow-xl shadow-black/20">
+    <span class="flex h-6 w-6 items-center justify-center rounded-lg bg-[#fef3c7] text-[#b45309]"><%= icon :ticket, size: 14 %></span>
+    Ticket created · High priority
+  </div>
+</div>

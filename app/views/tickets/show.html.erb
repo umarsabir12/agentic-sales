@@ -29,7 +29,7 @@
       <div class="flex justify-between"><dt class="text-gray-500">Created by</dt><dd><%= @ticket.source_ai? ? "AI" : "Team" %></dd></div>
       <div class="flex justify-between"><dt class="text-gray-500">Created</dt><dd><%= time_ago_in_words(@ticket.created_at) %> ago</dd></div>
       <% if @ticket.closed_at %>
-        <div class="flex justify-between"><dt class="text-gray-500">Closed</dt><dd><%= l @ticket.closed_at.to_date, format: :long %></dd></div>
+        <div class="flex justify-between"><dt class="text-gray-500">Closed</dt><dd><%= short_date(@ticket.closed_at) %></dd></div>
       <% end %>
     </dl>
   </section>

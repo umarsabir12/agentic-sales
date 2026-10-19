@@ -12,7 +12,8 @@ class Outreach
   attr_accessor :conversation, :user
   attr_reader :message
 
-  validates :phone, presence: true, format: { with: /\A\+?[\d\s\-()]{8,20}\z/, message: "must be a full number with country code" }, unless: :conversation
+  validates :phone, presence: true, unless: :conversation
+  validate :phone_has_country_code, unless: :conversation
   validates :template, presence: true
   validate :template_is_sendable, :params_are_complete
 
@@ -47,6 +48,13 @@ class Outreach
       contact = Contact.find_or_create_by!(phone: Contact.normalize_value_for(:phone, phone))
       contact.update!(name: name) if name.present? && contact.name.blank?
       contact.current_conversation || contact.conversations.create!
+    end
+
+    def phone_has_country_code
+      digits = Contact.normalize_value_for(:phone, phone)
+      return if phone.blank? || digits.match?(/\A[1-9]\d{7,14}\z/)
+
+      errors.add(:phone, digits.start_with?("0") ? "must start with the country code, e.g. +92 300 1234567 (not 0300…)" : "isn't a valid WhatsApp number")
     end
 
     def template_is_sendable

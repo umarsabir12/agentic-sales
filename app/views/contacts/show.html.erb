@@ -10,7 +10,7 @@
     <dl class="card-body space-y-3 text-sm">
       <div><dt class="text-gray-500">Phone</dt><dd class="tabular-nums">+<%= @contact.phone %></dd></div>
       <div><dt class="text-gray-500">WhatsApp name</dt><dd><%= @contact.profile_name.presence || "—" %></dd></div>
-      <div><dt class="text-gray-500">Customer since</dt><dd><%= l @contact.created_at.to_date, format: :long %></dd></div>
+      <div><dt class="text-gray-500">Customer since</dt><dd><%= short_date(@contact.created_at) %></dd></div>
       <div><dt class="text-gray-500">Notes</dt><dd class="whitespace-pre-wrap"><%= @contact.notes.presence || "—" %></dd></div>
     </dl>
   </section>
@@ -21,7 +21,7 @@
       <% @conversations.each do |conversation| %>
         <li>
           <%= link_to conversation, class: "flex items-center justify-between px-5 py-3 hover:bg-gray-50" do %>
-            <span>Started <%= l conversation.created_at.to_date, format: :long %></span>
+            <span>Started <%= short_date(conversation.created_at) %></span>
             <%= badge conversation.status %>
           <% end %>
         </li>

@@ -1,0 +1,78 @@
+<% content_for :title, "Create account" %>
+
+<% content_for :auth_aside do %>
+  <h1 class="text-4xl font-extrabold leading-tight tracking-tight">Set up your sales inbox in minutes.</h1>
+  <p class="mt-4 max-w-md text-[15px] leading-relaxed text-white/85">Create your account, connect your WhatsApp number and let the AI agent take the first reply.</p>
+
+  <%= render "devise/shared/flow_illustration" %>
+
+  <ol class="mt-8 max-w-md space-y-3">
+    <% [ [ "Create your account", "Your name, work email and company." ],
+         [ "Connect WhatsApp", "Link your business number through the WhatsApp Cloud API." ],
+         [ "Invite your sales team", "They take over whenever a customer needs a human." ] ].each_with_index do |(title, text), i| %>
+      <li class="flex gap-3 rounded-xl border border-white/20 bg-white/10 px-4 py-3 backdrop-blur-sm">
+        <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white text-xs font-bold text-[#3b37c9]"><%= i + 1 %></span>
+        <div>
+          <div class="text-sm font-semibold"><%= title %></div>
+          <div class="text-[13px] text-white/80"><%= text %></div>
+        </div>
+      </li>
+    <% end %>
+  </ol>
+<% end %>
+
+<h2 class="text-2xl font-bold tracking-tight">Create your account</h2>
+<p class="mt-1 text-sm text-gray-500">Start answering WhatsApp leads with your AI agent.</p>
+
+<%= form_for(resource, as: resource_name, url: user_registration_path, html: { class: "mt-8 space-y-5" }) do |f| %>
+  <%= render "shared/auth_errors", resource: resource %>
+
+  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <div>
+      <%= f.label :name, "Full name", class: "form-label" %>
+      <%= f.text_field :name, autofocus: true, autocomplete: "name", required: true, placeholder: "Your name", class: "form-control" %>
+    </div>
+    <div>
+      <%= f.label :company, class: "form-label" %>
+      <%= f.text_field :company, autocomplete: "organization", placeholder: "Company name", class: "form-control" %>
+    </div>
+  </div>
+
+  <div>
+    <%= f.label :email, "Work email", class: "form-label" %>
+    <div class="relative">
+      <span class="input-icon"><%= icon :mail, size: 16 %></span>
+      <%= f.email_field :email, autocomplete: "email", required: true, placeholder: "you@company.com", class: "form-control pl-9" %>
+    </div>
+  </div>
+
+  <div data-controller="password-strength">
+    <%= f.label :password, class: "form-label" %>
+    <%= render "devise/shared/password_field", f: f, field: :password, autocomplete: "new-password",
+          placeholder: "At least #{@minimum_password_length || 8} characters",
+          data: { password_strength_target: "input", action: "input->password-strength#update" } %>
+    <div class="mt-2 grid grid-cols-4 gap-1.5" aria-hidden="true">
+      <% 4.times do %><span class="h-1 rounded-full bg-gray-200" data-password-strength-target="bar"></span><% end %>
+    </div>
+    <div class="mt-1.5 flex justify-between text-xs text-gray-500">
+      <span>Use 8+ characters with a mix of letters, numbers and symbols.</span>
+      <span class="font-medium" data-password-strength-target="label" aria-live="polite"></span>
+    </div>
+  </div>
+
+  <% if ENV["TERMS_URL"].present? && ENV["PRIVACY_URL"].present? %>
+    <label class="flex items-start gap-2 text-sm">
+      <input type="checkbox" required class="mt-0.5 h-4 w-4 rounded border-gray-300 accent-[var(--color-primary)]">
+      <span>I agree to the <%= link_to "Terms of Service", ENV["TERMS_URL"], class: "link font-medium", target: "_blank" %> and <%= link_to "Privacy Policy", ENV["PRIVACY_URL"], class: "link font-medium", target: "_blank" %>.</span>
+    </label>
+  <% end %>
+
+  <%= f.submit "Create account", class: "btn btn-primary w-full py-2.5" %>
+  <% if User.exists? %>
+    <p class="text-center text-xs text-gray-500">An admin approves new accounts before your first sign-in.</p>
+  <% end %>
+<% end %>
+
+<p class="mt-8 text-center text-sm text-gray-500">
+  Already have an account? <%= link_to "Sign in", new_session_path(resource_name), class: "link font-semibold" %>
+</p>

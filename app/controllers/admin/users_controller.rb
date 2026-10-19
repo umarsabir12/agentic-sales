@@ -2,7 +2,13 @@ class Admin::UsersController < Admin::BaseController
   before_action :set_user, only: %i[ edit update destroy ]
 
   def index
-    @users = User.order(:name)
+    @users = User.order(Arel.sql("approved_at IS NOT NULL"), :name)
+  end
+
+  def approve
+    @user = User.find(params[:id])
+    @user.approve!
+    redirect_to admin_users_path, notice: "#{@user.name} can now sign in."
   end
 
   def new
@@ -10,7 +16,7 @@ class Admin::UsersController < Admin::BaseController
   end
 
   def create
-    @user = User.new(user_params)
+    @user = User.new(user_params.merge(approved_at: Time.current))
 
     if @user.save
       redirect_to admin_users_path, notice: "#{@user.name} was added to the team."

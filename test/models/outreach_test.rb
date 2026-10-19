@@ -38,4 +38,10 @@ class OutreachTest < ActiveSupport::TestCase
     end
     assert_equal conversation, outreach.message.conversation
   end
+
+  test "rejects local numbers without a country code" do
+    outreach = Outreach.new(phone: "0300 1234567", template_id: message_templates(:quote_follow_up).id, template_params: [ "A", "B" ], user: users(:agent))
+    assert_not outreach.save
+    assert_match "country code", outreach.errors[:phone].first
+  end
 end

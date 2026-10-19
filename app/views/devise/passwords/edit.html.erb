@@ -1,20 +1,28 @@
-<% content_for :title, "Change password" %>
+<% content_for :title, "Choose a new password" %>
 
-<div class="card">
-  <div class="card-body p-7">
-    <h1 class="mb-6 text-center text-lg font-semibold">Choose a new password</h1>
-    <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put, class: "space-y-4" }) do |f| %>
-      <%= render "devise/shared/error_messages", resource: resource %>
-      <%= f.hidden_field :reset_password_token %>
-      <div>
-        <%= f.label :password, "New password", class: "form-label" %>
-        <%= f.password_field :password, autofocus: true, autocomplete: "new-password", required: true, class: "form-control" %>
-      </div>
-      <div>
-        <%= f.label :password_confirmation, "Confirm new password", class: "form-label" %>
-        <%= f.password_field :password_confirmation, autocomplete: "new-password", required: true, class: "form-control" %>
-      </div>
-      <%= f.submit "Change password", class: "btn btn-primary w-full" %>
-    <% end %>
+<% content_for :auth_aside do %>
+  <h1 class="text-4xl font-extrabold leading-tight tracking-tight">Choose a new password.</h1>
+  <p class="mt-4 max-w-md text-[15px] leading-relaxed text-white/85">Use something you don't use anywhere else. Your team's customer conversations depend on it.</p>
+<% end %>
+
+<h2 class="text-2xl font-bold tracking-tight">New password</h2>
+<p class="mt-1 text-sm text-gray-500">Pick a password with 8 or more characters.</p>
+
+<%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put, class: "mt-8 space-y-5" }) do |f| %>
+  <%= render "shared/auth_errors", resource: resource %>
+  <%= f.hidden_field :reset_password_token %>
+  <div data-controller="password-strength">
+    <%= f.label :password, "New password", class: "form-label" %>
+    <%= render "devise/shared/password_field", f: f, field: :password, autocomplete: "new-password", placeholder: "At least 8 characters",
+          data: { password_strength_target: "input", action: "input->password-strength#update" } %>
+    <div class="mt-2 grid grid-cols-4 gap-1.5" aria-hidden="true">
+      <% 4.times do %><span class="h-1 rounded-full bg-gray-200" data-password-strength-target="bar"></span><% end %>
+    </div>
+    <div class="mt-1.5 text-right text-xs font-medium text-gray-500" data-password-strength-target="label" aria-live="polite"></div>
   </div>
-</div>
+  <div>
+    <%= f.label :password_confirmation, "Confirm new password", class: "form-label" %>
+    <%= render "devise/shared/password_field", f: f, field: :password_confirmation, autocomplete: "new-password", placeholder: "Repeat the password" %>
+  </div>
+  <%= f.submit "Change password", class: "btn btn-primary w-full py-2.5" %>
+<% end %>

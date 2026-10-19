@@ -27,7 +27,12 @@ module ApplicationHelper
 
   def badge(value)
     tag.span BADGE_LABELS.fetch(value.to_s, value.to_s.humanize),
-      class: "inline-flex items-center rounded px-2 py-0.5 text-xs font-medium #{BADGE_COLORS.fetch(value.to_s, "bg-gray-100 text-gray-600")}"
+      class: "chip #{BADGE_COLORS.fetch(value.to_s, "bg-gray-100 text-gray-600")}"
+  end
+
+  # "6 Oct 2026"
+  def short_date(time)
+    time&.strftime("%-d %b %Y")
   end
 
   def nav_link(label, path, active:, count: nil)

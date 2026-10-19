@@ -1,12 +1,8 @@
 <% content_for :title, "Dashboard" %>
 
-<div class="mb-5 flex flex-wrap items-end justify-between gap-4">
-  <div>
-    <div class="text-[13px] text-gray-500"><%= l Date.current, format: "%A, %-d %B" %></div>
-    <h1 class="mt-0.5 text-2xl font-semibold tracking-tight"><%= greeting %>, <%= current_user.name.split.first %></h1>
-  </div>
+<%= render "shared/page_header", pretitle: l(Date.current, format: "%A, %-d %B"), title: "#{greeting}, #{current_user.name.split.first}" do %>
   <%= link_to new_ticket_path, class: "btn btn-primary" do %><%= icon :plus, size: 16 %> New ticket<% end %>
-</div>
+<% end %>
 
 <% if @needs_human.positive? || @unowned_hot_tickets.positive? %>
   <div class="mb-4 flex flex-wrap items-center gap-x-6 gap-y-2 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm" role="status">
@@ -88,7 +84,7 @@
         <li class="px-4 py-3">
           <div class="flex gap-3">
             <span class="relative">
-              <span class="avatar h-8 w-8 text-xs"><%= conversation.contact.display_name.first.upcase %></span>
+              <span class="avatar h-8 w-8 text-xs"><%= conversation.contact.avatar_letter %></span>
               <% if last&.inbound? %><span class="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full border-2 border-surface bg-brand-600" title="Waiting for a reply"></span><% end %>
             </span>
             <div class="min-w-0 flex-1">

@@ -1,5 +1,9 @@
 Rails.application.routes.draw do
   devise_for :users, skip: :registrations
+  devise_scope :user do
+    get "users/sign_up", to: "users/registrations#new", as: :new_user_registration
+    post "users", to: "users/registrations#create", as: :user_registration
+  end
 
   root "dashboard#show"
 
@@ -20,7 +24,9 @@ Rails.application.routes.draw do
   resources :contacts, only: %i[ index show edit update ]
 
   namespace :admin do
-    resources :users, except: :show
+    resources :users, except: :show do
+      patch :approve, on: :member
+    end
     resource :agent, only: %i[ edit update ], controller: "agent_settings"
   end
 

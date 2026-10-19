@@ -4,9 +4,16 @@
   <%= link_to new_admin_user_path, class: "btn btn-primary" do %><%= icon :plus, size: 16 %> Add member<% end %>
 <% end %>
 
+<% pending = @users.reject(&:approved?) %>
+<% if pending.any? %>
+  <div class="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm" role="status">
+    <strong class="font-semibold"><%= pluralize(pending.size, "person") %></strong> signed up and <%= pending.size == 1 ? "is" : "are" %> waiting for approval. Approved members can read every customer conversation.
+  </div>
+<% end %>
+
 <section class="card overflow-x-auto">
   <table class="table">
-    <thead><tr><th>Name</th><th>Email</th><th>Role</th><th></th></tr></thead>
+    <thead><tr><th>Name</th><th>Email</th><th>Company</th><th>Role</th><th></th></tr></thead>
     <tbody>
       <% @users.each do |user| %>
         <tr>
@@ -14,15 +21,20 @@
             <div class="flex items-center gap-3">
               <span class="avatar h-8 w-8 text-xs"><%= user.initials %></span>
               <span class="font-medium"><%= user.name %></span>
+              <% unless user.approved? %><span class="chip bg-amber-50 text-amber-700">Pending</span><% end %>
             </div>
           </td>
           <td class="text-gray-600"><%= user.email %></td>
+          <td class="text-gray-600"><%= user.company.presence || "—" %></td>
           <td><%= user.role.humanize %></td>
           <td>
             <div class="flex justify-end gap-2">
+              <% unless user.approved? %>
+                <%= button_to "Approve", approve_admin_user_path(user), method: :patch, class: "btn btn-sm btn-primary" %>
+              <% end %>
               <%= link_to "Edit", edit_admin_user_path(user), class: "btn btn-sm" %>
               <% unless user == current_user %>
-                <%= button_to "Remove", admin_user_path(user), method: :delete, form: { data: { turbo_confirm: "Remove #{user.name}?" } }, class: "btn btn-sm btn-danger" %>
+                <%= button_to user.approved? ? "Remove" : "Decline", admin_user_path(user), method: :delete, form: { data: { turbo_confirm: "Remove #{user.name}?" } }, class: "btn btn-sm btn-danger" %>
               <% end %>
             </div>
           </td>

@@ -1,0 +1,14 @@
+<%# Decorative: customer on WhatsApp -> AI agent -> sales team. %>
+<div class="relative mt-10 flex max-w-md items-center justify-between rounded-2xl border border-white/20 bg-white/10 p-5 backdrop-blur-sm" aria-hidden="true">
+  <% [ [ :inbox, "Customer", "bg-[#25d366]" ], [ :robot, "AI agent", "bg-[#8b5cf6]" ], [ :team, "Your team", "bg-[#f59e0b]" ] ].each_with_index do |(icon_name, label, color), i| %>
+    <% if i.positive? %>
+      <div class="relative mx-2 h-px flex-1 border-t-2 border-dashed border-white/40">
+        <span class="absolute -top-[5px] right-0 h-2 w-2 rotate-45 border-r-2 border-t-2 border-white/60"></span>
+      </div>
+    <% end %>
+    <div class="flex flex-col items-center gap-2">
+      <span class="flex h-14 w-14 items-center justify-center rounded-2xl <%= color %> text-white shadow-lg shadow-black/20"><%= icon icon_name, size: 26 %></span>
+      <span class="text-xs font-medium text-white/90"><%= label %></span>
+    </div>
+  <% end %>
+</div>

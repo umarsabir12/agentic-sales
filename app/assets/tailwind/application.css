@@ -27,6 +27,9 @@
   --color-attention: #92400e;
   --color-on-attention: #ffffff;
 
+  /* Sign-in / sign-up brand panel (same in both themes). */
+  --color-auth-panel: #3461c1;
+
   /* Chart series (validated with the dataviz palette checker for each theme). */
   --color-series-ai: #7c5ce6;
   --color-series-team: #e09a2c;
@@ -119,6 +122,17 @@
   .avatar { @apply inline-flex shrink-0 items-center justify-center rounded-full bg-brand-50 font-semibold text-brand-700; }
   .link { @apply text-brand-600 hover:underline; }
 
+  /* Brand panel on the sign-in / sign-up pages: gradient, soft glows and a dot texture. */
+  .auth-panel {
+    background-color: #2b4fc4;
+    background-image:
+      radial-gradient(rgb(255 255 255 / 0.14) 1px, transparent 1px),
+      radial-gradient(circle at 85% 10%, rgb(56 189 248 / 0.45), transparent 40%),
+      radial-gradient(circle at 10% 95%, rgb(167 139 250 / 0.55), transparent 45%),
+      linear-gradient(135deg, #2b4fc4 0%, #4338ca 55%, #6d28d9 100%);
+    background-size: 22px 22px, 100% 100%, 100% 100%, 100% 100%;
+  }
+  .input-icon { @apply pointer-events-none absolute inset-y-0 left-3 flex items-center text-gray-400; }
   .chip { @apply inline-flex items-center rounded px-1.5 py-0.5 text-[11px] font-medium; }
 
   .nav-pill { @apply flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-ink; }

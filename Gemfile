@@ -68,4 +68,4 @@ end
 # json 3.x drops the quirks_mode option that Rails 8.0 cookie serialization still passes.
 gem "json", "~> 2.10"
 
-gem "anthropic", "~> 1.78"
+gem "anthropic", "~> 2.1"
